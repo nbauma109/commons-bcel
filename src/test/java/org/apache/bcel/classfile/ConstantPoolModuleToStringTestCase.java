@@ -16,20 +16,30 @@
  */
 package org.apache.bcel.classfile;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Enumeration;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.bcel.util.SyntheticRepository;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Tests {@code module-info.class} files.
  */
-public class ConstantPoolModuleToStringTestCase {
+class ConstantPoolModuleToStringTestCase {
 
     static class ToStringVisitor implements Visitor {
 
@@ -255,13 +265,34 @@ public class ConstantPoolModuleToStringTestCase {
 
         @Override
         public void visitModule(final Module constantModule) {
+            final String s = constantModule.toString();
+            final Matcher matcher = Pattern.compile("  (\\w+)([:(])").matcher(s);
+            while (matcher.find()) {
+                switch (matcher.group(2)) {
+                    case ":":
+                        assertTrue(StringUtils.containsAny(matcher.group(1), "name", "flags", "version"));
+                        break;
+                    case "(":
+                        assertTrue(StringUtils.containsAny(matcher.group(1), "requires", "exports", "opens", "uses", "provides"));
+                        break;
+                    default:
+                        break;
+                }
+            }
             append(constantModule);
         }
 
         @Override
         public void visitModuleExports(final ModuleExports constantModule) {
             append(constantModule);
-            append(constantModule.toString(pool));
+            final String s = constantModule.toString(pool);
+            final String[] tokens = s.split(", ");
+            assertNotNull(tokens);
+            assertEquals(3, tokens.length);
+            assertEquals("0000", tokens[1]);
+            final Matcher matcher = Pattern.compile("to\\((\\d+)\\):").matcher(tokens[2]);
+            assertTrue(matcher.find());
+            assertEquals(Integer.parseInt(matcher.group(1)), StringUtils.countMatches(s, '\n'));
         }
 
         @Override
@@ -272,18 +303,34 @@ public class ConstantPoolModuleToStringTestCase {
         @Override
         public void visitModuleOpens(final ModuleOpens constantModule) {
             append(constantModule);
-            append(constantModule.toString(pool));
+            final String s = constantModule.toString(pool);
+            final String[] tokens = s.split(", ");
+            assertNotNull(tokens);
+            assertEquals(3, tokens.length);
+            assertEquals("0000", tokens[1]);
+            final Matcher matcher = Pattern.compile("to\\((\\d+)\\):").matcher(tokens[2]);
+            assertTrue(matcher.find());
+            assertEquals(Integer.parseInt(matcher.group(1)), StringUtils.countMatches(s, '\n'));
         }
 
         @Override
         public void visitModulePackages(final ModulePackages constantModule) {
             append(constantModule);
+            final String s = constantModule.toString();
+            assertEquals(constantModule.getNumberOfPackages(), StringUtils.countMatches(s, '\n'));
         }
 
         @Override
         public void visitModuleProvides(final ModuleProvides constantModule) {
             append(constantModule);
-            append(constantModule.toString(pool));
+            final String s = constantModule.toString(pool);
+            final String[] tokens = s.split(", ");
+            assertNotNull(tokens);
+            assertEquals(2, tokens.length);
+            final Matcher matcher = Pattern.compile("with\\((\\d+)\\):").matcher(tokens[1]);
+            assertTrue(matcher.find());
+            assertEquals(Integer.parseInt(matcher.group(1)), StringUtils.countMatches(s, '\n'));
+            append(s);
         }
 
         @Override
@@ -291,7 +338,7 @@ public class ConstantPoolModuleToStringTestCase {
             append(constantModule);
             append(constantModule.toString(pool));
             final String s = constantModule.toString(pool).trim();
-            assertTrue(s.startsWith("java.base") || s.startsWith("Othermodularthing"), s);
+            assertTrue(StringUtils.startsWithAny(s, "jdk.", "java.", "org.junit", "org.apiguardian.api", "org.opentest4j"), s);
         }
 
         @Override
@@ -353,19 +400,50 @@ public class ConstantPoolModuleToStringTestCase {
         "src/test/resources/jpms/java18/commons-io/module-info.class",
         "src/test/resources/jpms/java19-ea/commons-io/module-info.class"})
     // @formatter:on
-    public void test(final String first) throws Exception {
+    void test(final String first) throws Exception {
         try (final InputStream inputStream = Files.newInputStream(Paths.get(first))) {
-            final ClassParser classParser = new ClassParser(inputStream, "module-info.class");
-            final JavaClass javaClass = classParser.parse();
-            final ConstantPool constantPool = javaClass.getConstantPool();
-            final ToStringVisitor visitor = new ToStringVisitor(constantPool);
-            final DescendingVisitor descendingVisitor = new DescendingVisitor(javaClass, visitor);
-            try {
-                javaClass.accept(descendingVisitor);
-            } catch (Exception | Error e) {
-                fail(visitor.toString(), e);
+            test(inputStream);
+        }
+    }
+
+    @Test
+    void test() throws Exception {
+        final Enumeration<URL> moduleURLs = getClass().getClassLoader().getResources("module-info.class");
+        while (moduleURLs.hasMoreElements()) {
+            final URL url = moduleURLs.nextElement();
+            try (InputStream inputStream = url.openStream()) {
+                test(inputStream);
             }
         }
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {
+    // @formatter:off
+        "org.apache.commons.lang3.function.TriFunction",
+        "java.io.StringBufferInputStream",
+        "java.nio.file.Files",
+        "java.lang.Math"})
+    // @formatter:on
+    void testClass(final String className) throws Exception {
+        testJavaClass(SyntheticRepository.getInstance().loadClass(className));
+    }
+    
+    private static void test(final InputStream inputStream) throws IOException {
+        final ClassParser classParser = new ClassParser(inputStream, "module-info.class");
+        final JavaClass javaClass = classParser.parse();
+        testJavaClass(javaClass);
+    }
+
+    private static void testJavaClass(final JavaClass javaClass) {
+        final ConstantPool constantPool = javaClass.getConstantPool();
+        final ToStringVisitor visitor = new ToStringVisitor(constantPool);
+        final DescendingVisitor descendingVisitor = new DescendingVisitor(javaClass, visitor);
+        try {
+            javaClass.accept(descendingVisitor);
+            assertNotNull(visitor.toString());
+        } catch (Exception | Error e) {
+            fail(visitor.toString(), e);
+        }
+    }
 }
