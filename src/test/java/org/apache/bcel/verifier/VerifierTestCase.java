@@ -18,16 +18,21 @@
 package org.apache.bcel.verifier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.NestHost;
 import org.apache.bcel.classfile.Utility;
+import org.apache.bcel.verifier.exc.AssertionViolatedException;
+import org.apache.bcel.verifier.statics.StringRepresentation;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -82,13 +87,46 @@ public class VerifierTestCase {
         }
     }
 
-    @Test
-    public void testCollection() throws ClassNotFoundException {
-        testDefaultMethodValidation(Collection.class.getName());
+    private static void testNestHostWithJavaVersion(final String className) throws ClassNotFoundException {
+        final String version = System.getProperty("java.version");
+        assertNotNull(version);
+        try {
+            testDefaultMethodValidation(className);
+            assertTrue(version.startsWith("1."));
+        } catch (final AssertionViolatedException e) {
+            assertFalse(version.startsWith("1."));
+            final StringBuilder expectedMessage = new StringBuilder();
+            expectedMessage.append("INTERNAL ERROR: Please adapt '");
+            expectedMessage.append(StringRepresentation.class);
+            expectedMessage.append("' to deal with objects of class '");
+            expectedMessage.append(NestHost.class);
+            expectedMessage.append("'.");
+            assertEquals(expectedMessage.toString(), e.getCause().getMessage());
+        }
     }
 
     @Test
+    public void testCollection() throws ClassNotFoundException {
+        testDefaultMethodValidation("java.util.Collection");
+    }
+    
+    @Test
+    public void testArrayUtils() throws ClassNotFoundException {
+        testNestHostWithJavaVersion("org.apache.commons.lang.ArrayUtils");
+    }
+    
+    @Test
+    public void testDefinitionImpl() throws ClassNotFoundException {
+        testNestHostWithJavaVersion("com.ibm.wsdl.DefinitionImpl");
+    }
+    
+    @Test
     public void testCommonsLang1() throws IOException, URISyntaxException, ClassNotFoundException {
-        testJarFile(getJarFile(org.apache.commons.lang.StringUtils.class), "SerializationUtils");
+        testJarFile(getJarFile(org.apache.commons.lang.StringUtils.class), "ArrayUtils", "SerializationUtils");
+    }
+
+    @Test
+    public void testWSDL() throws IOException, URISyntaxException, ClassNotFoundException {
+        testJarFile(getJarFile(javax.wsdl.Port.class), "WSDLReaderImpl",  "DefinitionImpl");
     }
 }
