@@ -24,11 +24,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -36,7 +43,7 @@ import org.junit.jupiter.api.Test;
  */
 public class JDKClassDumpTestCase {
 
-    private void compare(final JavaClass jc, final InputStream inputStream, final String name) throws Exception {
+    private static void compare(final JavaClass jc, final InputStream inputStream, final String name) throws Exception {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (DataOutputStream dos = new DataOutputStream(baos)) {
             jc.dump(dos);
@@ -52,7 +59,7 @@ public class JDKClassDumpTestCase {
         }
     }
 
-    private void testJar(final File file) throws Exception {
+    private static void testJar(final File file) throws Exception {
         System.out.println("parsing " + file);
         try (JarFile jar = new JarFile(file)) {
             final Enumeration<JarEntry> en = jar.entries();
@@ -71,17 +78,19 @@ public class JDKClassDumpTestCase {
 
     @Test
     public void testPerformance() throws Exception {
-        final File javaLib = new File(System.getProperty("java.home") + "/lib");
-        javaLib.listFiles(file -> {
-            if (file.getName().endsWith(".jar")) {
-                try {
-                    testJar(file);
-                } catch (final Exception e) {
-                    fail(e.getMessage());
+        final File javaHome = new File(System.getProperty("java.home"));
+        Files.walkFileTree(javaHome.toPath(), new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
+                if (StringUtils.endsWithAny(file.toFile().getName(), ".jar", ".jmod")) {
+                    try {
+                        testJar(file.toFile());
+                    } catch (final Exception e) {
+                        fail(e.getMessage());
+                    }
                 }
+                return super.visitFile(file, attrs);
             }
-            return false;
         });
     }
-
 }
