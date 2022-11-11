@@ -23,8 +23,8 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.OutputStream;
+import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 import org.junit.jupiter.api.Test;
 
@@ -42,14 +42,11 @@ public class BCELifierTestCase {
         // System.err.println(java.util.Arrays.toString(args));
         final ProcessBuilder pb = new ProcessBuilder(args);
         pb.directory(workDir);
+        pb.redirectErrorStream(true);
         final Process proc = pb.start();
-        try (BufferedInputStream is = new BufferedInputStream(proc.getInputStream()); InputStream es = proc.getErrorStream()) {
-            proc.waitFor();
+        try (BufferedInputStream is = new BufferedInputStream(proc.getInputStream())) {
             final byte[] buff = new byte[2048];
             int len;
-            while ((len = es.read(buff)) != -1) {
-                System.err.print(new String(buff, 0, len));
-            }
 
             final StringBuilder sb = new StringBuilder();
             while ((len = is.read(buff)) != -1) {
@@ -65,16 +62,19 @@ public class BCELifierTestCase {
 
         final File workDir = new File("target");
         final File infile = new File(javaClassFileName);
-        final JavaClass javaClass = BCELifier.getJavaClass(infile.getName().replace(".class", ""));
+        final JavaClass javaClass = new ClassParser(infile.getPath()).parse();
         assertNotNull(javaClass);
-        final File outfile = new File(workDir, infile.getName().replace(".class", "Creator.java"));
-        try (FileOutputStream fos = new FileOutputStream(outfile)) {
+        final String packageName = javaClass.getPackageName().replace('.', File.separatorChar);
+        final File outfile = new File(infile.getPath().substring(workDir.getPath().length() + 1).replace(".class", "Creator.java"));
+        final String outPath = outfile.getPath();
+        try (FileOutputStream fos = new FileOutputStream(new File(workDir, outPath))) {
             final BCELifier bcelifier = new BCELifier(javaClass, fos);
             bcelifier.start();
         }
-        exec(workDir, "javac", "-cp", "classes", outfile.getName(), "-source", "1.8", "-target", "1.8");
-        exec(workDir, "java", "-cp", "." + File.pathSeparator + "classes", outfile.getName().replace(".java", ""));
-        final String output = exec(workDir, "javap", "-p", "-c", infile.getName());
+        exec(workDir, "javac", "-cp", "classes", outPath, "-source", "1.8", "-target", "1.8");
+        final String creatorClassName = outPath.substring(outPath.indexOf(packageName)).replace(".java", "").replace(File.separatorChar, '.');
+        exec(workDir, "java", "-cp", "." + File.pathSeparator + "classes", creatorClassName);
+        final String output = exec(workDir, "javap", "-p", "-c", javaClass.getClassName() + ".class");
         assertEquals(canonHashRef(initial), canonHashRef(output));
     }
 
@@ -86,7 +86,7 @@ public class BCELifierTestCase {
                     testJavapCompare(files[i]);
                 }
             }
-        } else if (file.isFile() && file.getName().endsWith(".class") && file.getName().indexOf('$') == -1) {
+        } else if (file.isFile() && file.getName().matches("(?<!Creator)\\.class$")) { // exclude *Creator.class to avoid recursive creation of Creator of Creator classes
             testClassOnPath(file.getPath());
         }
     }

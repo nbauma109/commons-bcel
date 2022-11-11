@@ -27,6 +27,7 @@ import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.ConstantValue;
+import org.apache.bcel.classfile.ExceptionTable;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -35,7 +36,6 @@ import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.Type;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * This class takes a given JavaClass object and converts it to a Java program that creates that very class using BCEL.
@@ -222,11 +222,9 @@ public class BCELifier extends org.apache.bcel.classfile.EmptyVisitor {
         final String superName = clazz.getSuperclassName();
         final String packageName = clazz.getPackageName();
         final String inter = Utility.printArray(clazz.getInterfaceNames(), false, true);
-        if (StringUtils.isNotEmpty(inter)) {
-            className = className.substring(packageName.length() + 1);
-            printWriter.println("package " + packageName + ";");
-            printWriter.println();
-        }
+        className = className.substring(packageName.length() + 1);
+        printWriter.println("package " + packageName + ";");
+        printWriter.println();
         printWriter.println("import " + BASE_PACKAGE + ".generic.*;");
         printWriter.println("import " + BASE_PACKAGE + ".classfile.*;");
         printWriter.println("import " + BASE_PACKAGE + ".*;");
@@ -276,6 +274,15 @@ public class BCELifier extends org.apache.bcel.classfile.EmptyVisitor {
         printWriter.println("    MethodGen method = new MethodGen(" + printFlags(method.getAccessFlags(), FLAGS.METHOD) + ", " + printType(mg.getReturnType())
             + ", " + printArgumentTypes(mg.getArgumentTypes()) + ", " + "new String[] { " + Utility.printArray(mg.getArgumentNames(), false, true) + " }, \""
             + method.getName() + "\", \"" + clazz.getClassName() + "\", il, _cp);");
+        final ExceptionTable exceptionTable = method.getExceptionTable();
+        if (exceptionTable != null) {
+            final String[] exceptionNames = exceptionTable.getExceptionNames();
+            for (final String exceptionName : exceptionNames) {
+                printWriter.print("    method.addException(\"");
+                printWriter.print(exceptionName);
+                printWriter.println("\");");
+            }
+        }
         printWriter.println();
         final BCELFactory factory = new BCELFactory(mg, printWriter);
         factory.start();
