@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import org.apache.bcel.classfile.JavaClass;
 import org.junit.jupiter.api.Test;
 
@@ -79,13 +78,26 @@ public class BCELifierTestCase {
         assertEquals(canonHashRef(initial), canonHashRef(output));
     }
 
+    private void testJavapCompare(final File file) throws Exception {
+        if (file.isDirectory()) {
+            final File[] files = file.listFiles();
+            if (files != null) {
+                for (int i = 0; i < files.length; i++) {
+                    testJavapCompare(files[i]);
+                }
+            }
+        } else if (file.isFile() && file.getName().endsWith(".class")) {
+            testClassOnPath(file.getPath());
+        }
+    }
+
     /*
      * Dump a class using "javap" and compare with the same class recreated using BCELifier, "javac", "java" and dumped with
      * "javap" TODO: detect if JDK present and skip test if not
      */
     @Test
     public void testJavapCompare() throws Exception {
-        testClassOnPath("target/test-classes/Java8Example.class");
+        testJavapCompare(new File("target"));
     }
 
     @Test
