@@ -86,7 +86,7 @@ public class BCELifierTestCase {
                     testJavapCompare(files[i]);
                 }
             }
-        } else if (file.isFile() && file.getName().endsWith(".class")) {
+        } else if (file.isFile() && file.getName().endsWith(".class") && file.getName().indexOf('$') == -1) {
             testClassOnPath(file.getPath());
         }
     }
