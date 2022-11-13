@@ -21,27 +21,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-
 import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Utility;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 public class BCELifierTestCase {
 
-    private static final String TMP_DIR = System.getProperty("java.io.tmpdir");
     private static final String EOL = System.lineSeparator();
     private static final String CLASSPATH = System.getProperty("java.class.path");
 
@@ -60,7 +49,7 @@ public class BCELifierTestCase {
         pb.directory(workDir);
         pb.redirectErrorStream(true);
         final Process proc = pb.start();
-        try (BufferedInputStream is = new BufferedInputStream(proc.getInputStream())) {
+        try (final BufferedInputStream is = new BufferedInputStream(proc.getInputStream())) {
             final byte[] buff = new byte[2048];
             int len;
 
@@ -73,67 +62,22 @@ public class BCELifierTestCase {
     }
 
     private void testClassOnPath(final String javaClassFileName) throws Exception {
-        final PrintStream sysout = System.out;
-        try {
-            final ByteArrayOutputStream out = new ByteArrayOutputStream();
-            System.setOut(new PrintStream(out));
-            final String internalName = javaClassFileName.replace(".class", "");
-            // Get javap of the input class
-            final String initial = exec(null, "javap", "-p", "-c", "-cp", CLASSPATH, internalName);
-            BCELifier.main(new String[] { internalName });
-            final String sourceFileContents = new String(out.toByteArray());
-            final String sourceFilePath = TMP_DIR + File.separatorChar + javaClassFileName.replace(".class", "Creator.java");
-            new File(sourceFilePath).getParentFile().mkdirs();
-            Files.write(Paths.get(sourceFilePath), sourceFileContents.getBytes());
-            final String compilationResult = exec(null, "javac", "-cp", CLASSPATH, "-d", TMP_DIR, sourceFilePath);
-            assertEquals("", compilationResult);
-            final String creatorClassName = Utility.pathToPackage(javaClassFileName.replace(".class", "Creator"));
-            final String executionResult = exec(new File(TMP_DIR), "java", "-cp", "." + File.pathSeparator + CLASSPATH, creatorClassName);
-            assertEquals("", executionResult);
-            final String output = exec(null, "javap", "-p", "-c", TMP_DIR + File.separatorChar + Utility.pathToPackage(javaClassFileName));
-            assertEquals(canonHashRef(initial), canonHashRef(output));
-        } finally {
-            System.setOut(sysout);
+        // Get javap of the input class
+        final String initial = exec(null, "javap", "-p", "-c", javaClassFileName);
+
+        final File workDir = new File("target");
+        final File infile = new File(javaClassFileName);
+        final JavaClass javaClass = BCELifier.getJavaClass(infile.getName().replace(".class", ""));
+        assertNotNull(javaClass);
+        final File outfile = new File(workDir, infile.getName().replace(".class", "Creator.java"));
+        try (FileOutputStream fos = new FileOutputStream(outfile)) {
+            final BCELifier bcelifier = new BCELifier(javaClass, fos);
+            bcelifier.start();
         }
-    }
-
-    private static File getJarFile(final Class<?> clazz) throws URISyntaxException {
-        return new File(clazz.getProtectionDomain().getCodeSource().getLocation().toURI());
-    }
-
-    private void testJarFile(final File file, final String... excludes) throws Exception {
-        try (JarFile jarFile = new JarFile(file)) {
-            final Enumeration<JarEntry> entries = jarFile.entries();
-            while (entries.hasMoreElements()) {
-                final JarEntry jarEntry = entries.nextElement();
-                final String entryName = jarEntry.getName();
-                if (entryName.endsWith(".class") && !StringUtils.containsAny(entryName, excludes)) {
-                    testClassOnPath(entryName);
-                }
-            }
-        }
-    }
-
-    @Test
-    public void testCommonsLang2() throws Exception {
-        final File jarFile = getJarFile(org.apache.commons.lang.StringUtils.class);
-        final List<String> excludes = new ArrayList<>();
-        excludes.add("org/apache/commons/lang/enum");
-        excludes.add("NumberUtils");
-        excludes.add("FastDateFormat");
-        excludes.add("DateUtils");
-        excludes.add("Entities");
-        excludes.add("StringUtils");
-        excludes.add("ExceptionUtils");
-        excludes.add("SystemUtils");
-        excludes.add("ToStringStyle");
-        testJarFile(jarFile, excludes.stream().toArray(String[]::new));
-    }
-
-    @Test
-    public void testWSDL() throws Exception {
-        final File jarFile = getJarFile(javax.wsdl.Port.class);
-        testJarFile(jarFile, "DefinitionImpl", "PopulatedExtensionRegistry", "DOM2Writer", "DOMUtils", "WSDLReaderImpl", "WSDLWriterImpl");
+        exec(workDir, "javac", "-cp", "classes", outfile.getName(), "-source", "1.8", "-target", "1.8");
+        exec(workDir, "java", "-cp", "." + File.pathSeparator + "classes", outfile.getName().replace(".java", ""));
+        final String output = exec(workDir, "javap", "-p", "-c", infile.getName());
+        assertEquals(canonHashRef(initial), canonHashRef(output));
     }
 
     /*
@@ -143,8 +87,8 @@ public class BCELifierTestCase {
     @ParameterizedTest
     @ValueSource(strings = {
     // @formatter:off
-        "Java8Example.class",
-        "Java8Example2.class"
+        "target/test-classes/Java8Example.class",
+        "target/test-classes/Java8Example2.class"
     // @formatter:on
     })
     public void testJavapCompare(final String pathToClass) throws Exception {
@@ -172,5 +116,14 @@ public class BCELifierTestCase {
         } finally {
             System.setOut(sysout);
         }
+    }
+
+    @Test
+    public void testArrayUtilsCreator() throws Exception {
+        org.apache.commons.lang.ArrayUtilsCreator.main(new String[] {});
+        // Get javap of the input class
+        final String initial = exec(null, "javap", "-p", "-c", "-cp", CLASSPATH, "org/apache/commons/lang/ArrayUtils");
+        final String output = exec(null, "javap", "-p", "-c", "org.apache.commons.lang.ArrayUtils.class");
+        assertEquals(canonHashRef(initial), canonHashRef(output));
     }
 }
