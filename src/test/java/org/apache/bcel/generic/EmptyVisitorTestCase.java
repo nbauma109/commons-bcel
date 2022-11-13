@@ -43,15 +43,16 @@ class EmptyVisitorTestCase {
         "java.io.BufferedInputStream",                   // contains instruction DUP_X1
         "java.io.StreamTokenizer",                       // contains instruction DNEG, DSTORE
         "java.lang.Float",                               // contains instruction F2L
-        "java.lang.invoke.LambdaForm",                   // contains instruction MULTIANEWARRAY,
-        "java.nio.Bits",                                 // contains instruction POP2,
+        "java.lang.invoke.LambdaForm",                   // contains instruction MULTIANEWARRAY
+        "java.nio.Bits",                                 // contains instruction POP2
         "java.nio.HeapShortBuffer",                      // contains instruction SALOAD, SASTORE
         "java.awt.GradientPaintContext",                 // contains instruction DREM
         "java.util.concurrent.atomic.DoubleAccumulator", // contains instruction DUP2_X1
         "java.util.Hashtable",                           // contains instruction FNEG
         "javax.swing.text.html.CSS",                     // contains instruction DUP2_X2
         "org.apache.bcel.generic.LargeJump",             // contains instruction GOTO_W
-        "org.apache.commons.lang.SerializationUtils"     // contains instruction JSR
+        "org.apache.commons.lang.SerializationUtils",    // contains instruction JSR
+        "Java8Example2"                                  // contains instruction FREM
     // @formatter:on
     })
     public void test(final String className) throws ClassNotFoundException {

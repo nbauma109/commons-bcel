@@ -252,7 +252,13 @@ class BCELFactory extends EmptyVisitor {
     @Override
     public void visitINSTANCEOF(final INSTANCEOF i) {
         final Type type = i.getType(constantPoolGen);
-        printWriter.println("il.append(new INSTANCEOF(_cp.addClass(" + BCELifier.printType(type) + ")));");
+        printWriter.print("il.append(new INSTANCEOF(_cp.add");
+        if (type instanceof ArrayType) {
+            printWriter.print("Array");
+        }
+        printWriter.print("Class(");
+        printWriter.print(BCELifier.printType(type));
+        printWriter.println(")));");
     }
 
     private boolean visitInstruction(final Instruction i) {
@@ -299,7 +305,7 @@ class BCELFactory extends EmptyVisitor {
 
     @Override
     public void visitRET(final RET i) {
-        printWriter.println("il.append(new RET(" + i.getIndex() + ")));");
+        printWriter.println("il.append(new RET(" + i.getIndex() + "));");
     }
 
     @Override

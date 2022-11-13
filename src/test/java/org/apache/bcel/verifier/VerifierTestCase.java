@@ -121,7 +121,7 @@ public class VerifierTestCase {
     }
     
     @Test
-    public void testCommonsLang1() throws IOException, URISyntaxException, ClassNotFoundException {
+    public void testCommonsLang2() throws IOException, URISyntaxException, ClassNotFoundException {
         testJarFile(getJarFile(org.apache.commons.lang.StringUtils.class), "ArrayUtils", "SerializationUtils");
     }
 

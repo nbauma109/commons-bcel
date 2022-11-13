@@ -20,6 +20,7 @@ import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.ConstantValue;
+import org.apache.bcel.classfile.ExceptionTable;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -211,6 +212,9 @@ public class BCELifier extends org.apache.bcel.classfile.EmptyVisitor {
         final ConstantValue cv = field.getConstantValue();
         if (cv != null) {
             printWriter.print("    field.setInitValue(");
+            if (field.getType() == Type.CHAR) {
+                printWriter.print("(char)");
+            }
             printWriter.print(cv);
             if (field.getType() == Type.LONG) {
                 printWriter.print("L");
@@ -286,6 +290,15 @@ public class BCELifier extends org.apache.bcel.classfile.EmptyVisitor {
         printWriter.println("    MethodGen method = new MethodGen(" + printFlags(method.getAccessFlags(), FLAGS.METHOD) + ", " + printType(mg.getReturnType())
             + ", " + printArgumentTypes(mg.getArgumentTypes()) + ", " + "new String[] { " + Utility.printArray(mg.getArgumentNames(), false, true) + " }, \""
             + method.getName() + "\", \"" + clazz.getClassName() + "\", il, _cp);");
+        final ExceptionTable exceptionTable = method.getExceptionTable();
+        if (exceptionTable != null) {
+            final String[] exceptionNames = exceptionTable.getExceptionNames();
+            for (final String exceptionName : exceptionNames) {
+                printWriter.print("    method.addException(\"");
+                printWriter.print(exceptionName);
+                printWriter.println("\");");
+            }
+        }
         printWriter.println();
         final BCELFactory factory = new BCELFactory(mg, printWriter);
         factory.start();
