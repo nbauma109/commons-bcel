@@ -6,6 +6,7 @@ public class Java8Example2 implements java.io.Serializable, Runnable {
     private static final long serialVersionUID = 1L;
     public static final float E = 2.7182818284590452354f;
     public static final double PI = 3.14159265358979323846;
+    public static final char DOT = '.';
 
     private static transient volatile StringBuffer STRING_BUFFER = new StringBuffer();
 
@@ -14,18 +15,11 @@ public class Java8Example2 implements java.io.Serializable, Runnable {
     }
 
     void hello(String... args) {
-        List<String> words = Arrays.asList(args);
-        System.out.println(words);
-
-        List<String> words2 = words.stream().sorted(this::compare).collect(Collectors.toList());
-        System.out.println(words2);
+        Arrays.stream(args).forEach(System.out::println);
+        STRING_BUFFER.append(DOT);
     }
 
     float rem(float a, float b) {
         return a % b;
-    }
-
-    int compare(String a, String b) {
-        return a.compareTo(b);
     }
 }
