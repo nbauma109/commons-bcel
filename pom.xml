@@ -366,25 +366,60 @@
         <version>3.1.0</version>
         <executions>
           <execution>
+          	<id>ArrayUtilsCreator</id>
           	<phase>generate-test-sources</phase>
             <goals>
               <goal>exec</goal>
             </goals>
+	        <configuration>
+	          <executable>java</executable>
+	          <classpathScope>test</classpathScope>
+	          <outputFile>target/generated-test-sources/bcelifier/org/apache/commons/lang/ArrayUtilsCreator.java</outputFile>
+	          <arguments>
+	            <argument>-classpath</argument>
+	            <classpath/>
+	            <argument>org.apache.bcel.util.BCELifier</argument>
+	            <argument>org.apache.commons.lang.ArrayUtils</argument>
+	          </arguments>
+	        </configuration>
+          </execution>
+          <execution>
+          	<id>StringEscapeUtilsCreator</id>
+          	<phase>generate-test-sources</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+	        <configuration>
+	          <executable>java</executable>
+	          <classpathScope>test</classpathScope>
+	          <outputFile>target/generated-test-sources/bcelifier/org/apache/commons/lang/StringEscapeUtilsCreator.java</outputFile>
+	          <arguments>
+	            <argument>-classpath</argument>
+	            <classpath/>
+	            <argument>org.apache.bcel.util.BCELifier</argument>
+	            <argument>org.apache.commons.lang.StringEscapeUtils</argument>
+	          </arguments>
+	        </configuration>
+          </execution>
+          <execution>
+          	<id>SerializationUtilsCreator</id>
+          	<phase>generate-test-sources</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+	        <configuration>
+	          <executable>java</executable>
+	          <classpathScope>test</classpathScope>
+	          <outputFile>target/generated-test-sources/bcelifier/org/apache/commons/lang/SerializationUtilsCreator.java</outputFile>
+	          <arguments>
+	            <argument>-classpath</argument>
+	            <classpath/>
+	            <argument>org.apache.bcel.util.BCELifier</argument>
+	            <argument>org.apache.commons.lang.SerializationUtils</argument>
+	          </arguments>
+	        </configuration>
           </execution>
         </executions>
-        <configuration>
-          <executable>java</executable>
-          <classpathScope>test</classpathScope>
-          <outputFile>target/generated-test-sources/bcelifier/org/apache/commons/lang/ArrayUtilsCreator.java</outputFile>
-          <arguments>
-            <argument>-classpath</argument>
-            <!-- automatically creates the classpath using all project dependencies,
-                 also adding the project build directory -->
-            <classpath/>
-            <argument>org.apache.bcel.util.BCELifier</argument>
-            <argument>org.apache.commons.lang.ArrayUtils</argument>
-          </arguments>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
