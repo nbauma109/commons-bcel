@@ -424,6 +424,7 @@
 	             <argument>/MapUtils.class</argument>
 	             <argument>/BeanMap.class</argument>
 	             <argument>/ExtendedProperties.class</argument>
+	             <argument>/TreeBidiMap.class</argument>
 	          </arguments>
 	        </configuration>
           </execution>
