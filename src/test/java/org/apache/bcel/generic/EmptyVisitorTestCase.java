@@ -16,14 +16,14 @@
  */
 package org.apache.bcel.generic;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.util.SyntheticRepository;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-
-import static org.junit.jupiter.api.Assertions.fail;
 
 class EmptyVisitorTestCase {
 
@@ -64,17 +64,17 @@ class EmptyVisitorTestCase {
                 for (final InstructionHandle instructionHandle : instructionList) {
                     instructionHandle.accept(new EmptyVisitor() {
                         @Override
+                        public void visitBREAKPOINT(final BREAKPOINT obj) {
+                            fail(RESERVED_OPCODE);
+                        }
+
+                        @Override
                         public void visitIMPDEP1(final IMPDEP1 obj) {
                             fail(RESERVED_OPCODE);
                         }
 
                         @Override
                         public void visitIMPDEP2(final IMPDEP2 obj) {
-                            fail(RESERVED_OPCODE);
-                        }
-
-                        @Override
-                        public void visitBREAKPOINT(final BREAKPOINT obj) {
                             fail(RESERVED_OPCODE);
                         }
                     });

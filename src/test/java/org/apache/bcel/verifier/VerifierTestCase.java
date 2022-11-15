@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -39,9 +40,8 @@ import org.junit.jupiter.api.Test;
 
 public class VerifierTestCase {
 
-    @AfterEach
-    public void afterEach() {
-        VerifierFactory.clear();
+    private static File getJarFile(final Class<?> clazz) throws URISyntaxException {
+        return new File(clazz.getProtectionDomain().getCodeSource().getLocation().toURI());
     }
 
     private static void testDefaultMethodValidation(final String className, final String... excludes) throws ClassNotFoundException {
@@ -66,10 +66,6 @@ public class VerifierTestCase {
                 assertEquals(VerificationResult.VR_OK, result, "Pass 3b, method number " + i + " ['" + jc.getMethods()[i] + "']:\n" + result);
             }
         }
-    }
-
-    private static File getJarFile(final Class<?> clazz) throws URISyntaxException {
-        return new File(clazz.getProtectionDomain().getCodeSource().getLocation().toURI());
     }
 
     private static void testJarFile(final File file, final String... excludes) throws IOException, ClassNotFoundException {
@@ -105,24 +101,29 @@ public class VerifierTestCase {
         }
     }
 
-    @Test
-    public void testCollection() throws ClassNotFoundException {
-        testDefaultMethodValidation("java.util.Collection");
+    @AfterEach
+    public void afterEach() {
+        VerifierFactory.clear();
     }
-    
+
     @Test
     public void testArrayUtils() throws ClassNotFoundException {
         testNestHostWithJavaVersion("org.apache.commons.lang.ArrayUtils");
     }
     
     @Test
-    public void testDefinitionImpl() throws ClassNotFoundException {
-        testNestHostWithJavaVersion("com.ibm.wsdl.DefinitionImpl");
+    public void testCollection() throws ClassNotFoundException {
+        testDefaultMethodValidation("java.util.Collection");
     }
     
     @Test
     public void testCommonsLang2() throws IOException, URISyntaxException, ClassNotFoundException {
         testJarFile(getJarFile(org.apache.commons.lang.StringUtils.class), "ArrayUtils", "SerializationUtils");
+    }
+    
+    @Test
+    public void testDefinitionImpl() throws ClassNotFoundException {
+        testNestHostWithJavaVersion("com.ibm.wsdl.DefinitionImpl");
     }
 
     @Test
