@@ -192,7 +192,15 @@ public class BCELifier extends org.apache.bcel.classfile.EmptyVisitor {
         final String className = clazz.getClassName();
         printWriter.println("  public static void main(String[] args) throws Exception {");
         printWriter.println("    " + className + "Creator creator = new " + className + "Creator();");
-        printWriter.println("    creator.create(new FileOutputStream(\"" + className + ".class\"));");
+        printWriter.println("    FileOutputStream out = null;");
+        printWriter.println("    try {");
+        printWriter.println("      out = new FileOutputStream(\"" + className + ".class\");");
+        printWriter.println("      creator.create(out);");
+        printWriter.println("    } finally {");
+        printWriter.println("      if (out != null) {");
+        printWriter.println("        out.close();");
+        printWriter.println("      }");
+        printWriter.println("    }");
         printWriter.println("  }");
     }
 

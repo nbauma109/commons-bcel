@@ -260,6 +260,9 @@
               <Automatic-Module-Name>org.apache.bcel</Automatic-Module-Name>
             </manifestEntries>
           </archive>
+          <excludes>
+            <exclude>org/apache/bcel/util/BCELifierTestCaseGenerator.class</exclude>
+          </excludes>
         </configuration>
       </plugin>
       <plugin>
@@ -368,7 +371,7 @@
         <version>3.1.0</version>
         <executions>
           <execution>
-          	<id>ArrayUtilsCreator</id>
+          	<id>commons-lang</id>
           	<phase>generate-test-sources</phase>
             <goals>
               <goal>exec</goal>
@@ -376,17 +379,29 @@
 	        <configuration>
 	          <executable>java</executable>
 	          <classpathScope>test</classpathScope>
-	          <outputFile>target/generated-test-sources/bcelifier/org/apache/commons/lang/ArrayUtilsCreator.java</outputFile>
 	          <arguments>
 	            <argument>-classpath</argument>
 	            <classpath/>
-	            <argument>org.apache.bcel.util.BCELifier</argument>
+	            <argument>org.apache.bcel.util.BCELifierTestCaseGenerator</argument>
+	            <!-- any class of commons-lang -->
 	            <argument>org.apache.commons.lang.ArrayUtils</argument>
+	            <!-- destination directory -->
+	            <argument>target/generated-test-sources/bcelifier</argument>
+	             <!-- list of excludes / TODO remove and address test failures -->
+	            <argument>/ToStringStyle.class</argument>
+	            <argument>/ExceptionUtils.class</argument>
+	            <argument>/FastDateFormat.class</argument>
+	            <argument>/DateUtils.class</argument>
+	            <argument>/SystemUtils.class</argument>
+	            <argument>/Entities.class</argument>
+	            <argument>/StringUtils.class</argument>
+	            <argument>/math/NumberUtils.class</argument>
+	            <argument>/enum/</argument>
 	          </arguments>
 	        </configuration>
           </execution>
           <execution>
-          	<id>StringEscapeUtilsCreator</id>
+          	<id>wsdl4j</id>
           	<phase>generate-test-sources</phase>
             <goals>
               <goal>exec</goal>
@@ -394,30 +409,21 @@
 	        <configuration>
 	          <executable>java</executable>
 	          <classpathScope>test</classpathScope>
-	          <outputFile>target/generated-test-sources/bcelifier/org/apache/commons/lang/StringEscapeUtilsCreator.java</outputFile>
 	          <arguments>
 	            <argument>-classpath</argument>
 	            <classpath/>
-	            <argument>org.apache.bcel.util.BCELifier</argument>
-	            <argument>org.apache.commons.lang.StringEscapeUtils</argument>
-	          </arguments>
-	        </configuration>
-          </execution>
-          <execution>
-          	<id>SerializationUtilsCreator</id>
-          	<phase>generate-test-sources</phase>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-	        <configuration>
-	          <executable>java</executable>
-	          <classpathScope>test</classpathScope>
-	          <outputFile>target/generated-test-sources/bcelifier/org/apache/commons/lang/SerializationUtilsCreator.java</outputFile>
-	          <arguments>
-	            <argument>-classpath</argument>
-	            <classpath/>
-	            <argument>org.apache.bcel.util.BCELifier</argument>
-	            <argument>org.apache.commons.lang.SerializationUtils</argument>
+	            <argument>org.apache.bcel.util.BCELifierTestCaseGenerator</argument>
+	            <!-- any class of wsdl4j -->
+	            <argument>javax.wsdl.Port</argument>
+	            <!-- destination directory -->
+	            <argument>target/generated-test-sources/bcelifier</argument>
+	            <!-- list of excludes / TODO remove and address test failures -->
+	            <argument>/DefinitionImpl.class</argument>
+	            <argument>/DOM2Writer.class</argument>
+	            <argument>/DOMUtils.class</argument>
+	            <argument>/WSDLWriterImpl.class</argument>
+	            <argument>/WSDLReaderImpl.class</argument>
+	            <argument>/PopulatedExtensionRegistry.class</argument>
 	          </arguments>
 	        </configuration>
           </execution>
@@ -556,7 +562,7 @@
       <version>1.3</version>
       <scope>test</scope>
     </dependency>
-    <!-- START very old jars for Justice verifier -->
+    <!-- START very old jars for Justice verifier / BCELifier -->
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
@@ -569,7 +575,7 @@
       <version>1.5.3</version>
       <scope>test</scope>
     </dependency>
-    <!-- END very old jars for Justice verifier -->
+    <!-- END very old jars for Justice verifier / BCELifier -->
   </dependencies>
 
   <profiles>
