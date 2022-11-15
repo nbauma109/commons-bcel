@@ -401,6 +401,33 @@
 	        </configuration>
           </execution>
           <execution>
+          	<id>commons-collections</id>
+          	<phase>generate-test-sources</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+	        <configuration>
+	          <executable>java</executable>
+	          <classpathScope>test</classpathScope>
+	          <arguments>
+	            <argument>-classpath</argument>
+	            <classpath/>
+	            <argument>org.apache.bcel.util.BCELifierTestCaseGenerator</argument>
+	            <!-- any class of commons-lang -->
+	            <argument>org.apache.commons.collections.Bag</argument>
+	            <!-- destination directory -->
+	            <argument>target/generated-test-sources/bcelifier</argument>
+	             <!-- list of excludes / TODO remove and address test failures -->
+	             <argument>/DoubleOrderedMap.class</argument>
+	             <argument>/CollectionUtils.class</argument>
+	             <argument>/IteratorUtils.class</argument>
+	             <argument>/MapUtils.class</argument>
+	             <argument>/BeanMap.class</argument>
+	             <argument>/ExtendedProperties.class</argument>
+	          </arguments>
+	        </configuration>
+          </execution>
+          <execution>
           	<id>wsdl4j</id>
           	<phase>generate-test-sources</phase>
             <goals>
@@ -567,6 +594,12 @@
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
       <version>2.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+      <version>3.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
