@@ -73,7 +73,10 @@ public class BCELifierTestCaseGenerator {
         }
     }
 
-    private static void writeClass(final String internalName, final String classSimpleName, final String destinationDirectory, final BufferedWriter bw) throws IOException {
+    private static void writeClass(final String internalName,
+                                   final String classSimpleName,
+                                   final String destinationDirectory,
+                                   final BufferedWriter bw) throws IOException {
         bw.write("public class ");
         bw.write(classSimpleName);
         bw.write("CreatorTestCase {");
