@@ -223,6 +223,9 @@ public class BCELifier extends org.apache.bcel.classfile.EmptyVisitor {
             if (field.getType() == Type.CHAR) {
                 printWriter.print("(char)");
             }
+            if (field.getType() == Type.BYTE) {
+                printWriter.print("(byte)");
+            }
             printWriter.print(cv);
             if (field.getType() == Type.LONG) {
                 printWriter.print("L");
