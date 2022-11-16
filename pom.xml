@@ -429,7 +429,7 @@
 	        </configuration>
           </execution>
           <execution>
-          	<id>commons-math</id>
+          	<id>commons-codec</id>
           	<phase>generate-test-sources</phase>
             <goals>
               <goal>exec</goal>
@@ -441,8 +441,8 @@
 	            <argument>-classpath</argument>
 	            <classpath/>
 	            <argument>org.apache.bcel.util.BCELifierTestCaseGenerator</argument>
-	            <!-- any class of commons-math -->
-	            <argument>org.apache.commons.math.MathException</argument>
+	            <!-- any class of commons-codec -->
+	            <argument>org.apache.commons.codec.Encoder</argument>
 	            <!-- destination directory -->
 	            <argument>target/generated-test-sources/bcelifier</argument>
 	             <!-- list of excludes / TODO remove and address test failures -->
@@ -619,9 +619,9 @@
       <scope>test</scope>
     </dependency>
      <dependency>
-      <groupId>commons-math</groupId>
-      <artifactId>commons-math</artifactId>
-      <version>1.1</version>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.3</version>
       <scope>test</scope>
     </dependency>
    <dependency>
