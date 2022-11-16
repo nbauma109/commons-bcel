@@ -429,7 +429,7 @@
 	        </configuration>
           </execution>
           <execution>
-          	<id>commons-collections</id>
+          	<id>commons-math</id>
           	<phase>generate-test-sources</phase>
             <goals>
               <goal>exec</goal>
