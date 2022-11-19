@@ -704,7 +704,8 @@ public class InstructionFactory implements InstructionConstants {
         final InstructionList il = new InstructionList();
         il.append(createGetStatic("java.lang.System", "out", Type.getType("Ljava/io/PrintStream;")));
         il.append(new PUSH(cp, s));
-        il.append(createInvoke(new MethodObject("java.io.PrintStream", "println", Type.VOID, new Type[] { Type.getType("Ljava/lang/String;") }), Const.INVOKEVIRTUAL));
+        MethodObject methodObject = new MethodObject("java.io.PrintStream", "println", Type.VOID, new Type[] { Type.getType("Ljava/lang/String;") });
+        il.append(createInvoke(methodObject, Const.INVOKEVIRTUAL));
         return il;
     }
 
