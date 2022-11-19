@@ -591,7 +591,7 @@ public class JavaClass extends AccessFlags implements Cloneable, Node, Comparabl
         outFileName.append(sourceFileName);
         return outFileName.toString();
     }
-    
+
     /**
      * @return the superclass for this JavaClass object, or null if this is java.lang.Object
      * @throws ClassNotFoundException if the superclass can't be found
