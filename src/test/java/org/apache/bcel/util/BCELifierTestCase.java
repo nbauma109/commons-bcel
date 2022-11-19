@@ -18,12 +18,12 @@ package org.apache.bcel.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
@@ -48,20 +48,26 @@ public class BCELifierTestCase {
         // System.err.println(java.util.Arrays.toString(args));
         final ProcessBuilder pb = new ProcessBuilder(args);
         pb.directory(workDir);
+        pb.redirectErrorStream(true);
         final Process proc = pb.start();
-        try (BufferedInputStream is = new BufferedInputStream(proc.getInputStream()); InputStream es = proc.getErrorStream()) {
-            proc.waitFor();
+        try (BufferedInputStream is = new BufferedInputStream(proc.getInputStream())) {
             final byte[] buff = new byte[2048];
             int len;
-            while ((len = es.read(buff)) != -1) {
-                System.err.print(new String(buff, 0, len));
-            }
 
             final StringBuilder sb = new StringBuilder();
             while ((len = is.read(buff)) != -1) {
                 sb.append(new String(buff, 0, len));
             }
-            return sb.toString();
+            String output = sb.toString();
+            int exitCode = proc.waitFor();
+            if (exitCode != 0) {
+                if (output.isEmpty()) {
+                    fail("Exit code: " + exitCode);
+                } else {
+                    fail(output);
+                }
+            }
+            return output;
         }
     }
 

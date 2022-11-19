@@ -276,7 +276,7 @@ class BCELFactory extends EmptyVisitor {
     @Override
     public void visitINSTANCEOF(final INSTANCEOF i) {
         final Type type = i.getType(constantPoolGen);
-        printWriter.println("il.append(_factory.createInstanceOf(_cp.addClass(" + BCELifier.printType(type) + "));");
+        printWriter.println("il.append(_factory.createInstanceOf(" + BCELifier.printType(type) + "));");
     }
 
     private boolean visitInstruction(final Instruction i) {
