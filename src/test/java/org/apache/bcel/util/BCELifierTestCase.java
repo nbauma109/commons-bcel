@@ -28,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import org.apache.bcel.AbstractTestCase;
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Utility;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -89,7 +90,7 @@ public class BCELifierTestCase extends AbstractTestCase {
         if (javaAgent == null) {
             assertEquals("", exec(workDir, "java", "-cp", CLASSPATH, javaClass.getClassName() + "Creator"));
         } else {
-            String runtimeExecJavaAgent = javaAgent.replace("jacoco.exec", "jacoco_" + outfile.getName() + ".exec");
+            String runtimeExecJavaAgent = javaAgent.replace("jacoco.exec", "jacoco_" + Utility.pathToPackage(outFileName) + ".exec");
             assertEquals("", exec(workDir, "java", runtimeExecJavaAgent, "-cp", CLASSPATH, javaClass.getClassName() + "Creator"));
         }
         final String output = exec(workDir, "javap", "-p", "-c", infile.getName());
