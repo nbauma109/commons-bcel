@@ -105,8 +105,8 @@ public class BCELifierTestCase extends AbstractTestCase {
     @ValueSource(strings = {
     // @formatter:off
         "org.apache.commons.lang.math.Fraction.class",
+        "org.apache.commons.lang.exception.NestableDelegate.class",
         "org.apache.commons.lang.builder.CompareToBuilder.class",
-        "org.apache.commons.lang.builder.ReflectionToStringBuilder.class",
         "org.apache.commons.lang.builder.ToStringBuilder.class",
         "org.apache.commons.lang.SerializationUtils.class",
         "org.apache.commons.lang.ArrayUtils.class",
