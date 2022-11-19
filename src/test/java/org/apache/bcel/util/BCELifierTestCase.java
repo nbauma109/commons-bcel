@@ -25,11 +25,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class BCELifierTestCase {
+
+    private static final String EOL = System.lineSeparator();
 
     // Canonicalise the javap output so it compares better
     private String canonHashRef(String input) {
@@ -73,8 +78,8 @@ public class BCELifierTestCase {
             final BCELifier bcelifier = new BCELifier(javaClass, fos);
             bcelifier.start();
         }
-        exec(workDir, "javac", "-cp", "classes", outfile.getName(), "-source", "1.8", "-target", "1.8");
-        exec(workDir, "java", "-cp", "." + File.pathSeparator + "classes", outfile.getName().replace(".java", ""));
+        assertEquals("", exec(workDir, "javac", "-cp", "classes", outfile.getName()));
+        assertEquals("", exec(workDir, "java", "-cp", "." + File.pathSeparator + "classes", outfile.getName().replace(".java", "")));
         final String output = exec(workDir, "javap", "-p", "-c", infile.getName());
         assertEquals(canonHashRef(initial), canonHashRef(output));
     }
@@ -83,9 +88,16 @@ public class BCELifierTestCase {
      * Dump a class using "javap" and compare with the same class recreated using BCELifier, "javac", "java" and dumped with
      * "javap" TODO: detect if JDK present and skip test if not
      */
-    @Test
-    public void testJavapCompare() throws Exception {
-        testClassOnPath("target/test-classes/Java8Example.class");
+    @ParameterizedTest
+    @ValueSource(strings = {
+    // @formatter:off
+        "target/test-classes/Java8Example.class",
+        "target/test-classes/Java8Example2.class",
+        "target/test-classes/Java4Example.class"
+    // @formatter:on
+    })
+    public void testJavapCompare(final String pathToClass) throws Exception {
+        testClassOnPath(pathToClass);
     }
 
     @Test
@@ -97,4 +109,17 @@ public class BCELifierTestCase {
         bcelifier.start();
     }
 
+    @Test
+    public void testMainNoArg() throws Exception {
+        final PrintStream sysout = System.out;
+        try {
+            final ByteArrayOutputStream out = new ByteArrayOutputStream();
+            System.setOut(new PrintStream(out));
+            BCELifier.main(new String[0]);
+            final String outputNoArgs = new String(out.toByteArray());
+            assertEquals("Usage: BCELifier className" + EOL + "\tThe class must exist on the classpath" + EOL, outputNoArgs);
+        } finally {
+            System.setOut(sysout);
+        }
+    }
 }
