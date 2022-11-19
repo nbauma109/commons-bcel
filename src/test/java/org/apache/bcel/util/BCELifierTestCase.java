@@ -73,13 +73,8 @@ public class BCELifierTestCase extends AbstractTestCase {
 
         // Get javap of the input class
         final String initial = exec(null, "javap", "-cp", CLASSPATH, "-p", "-c", javaClass.getClassName());
-        final StringBuilder outFileName = new StringBuilder();
-        if (!javaClass.getPackageName().isEmpty()) {
-            outFileName.append(javaClass.getPackageName().replace('.', '/'));
-            outFileName.append('/');
-        }
-        outFileName.append(javaClass.getSourceFileName().replace(".java", "Creator.java"));
-        final File outfile = new File(workDir, outFileName.toString());
+        String outFileName = javaClass.getSourceFilePath().replace(".java", "Creator.java");
+        final File outfile = new File(workDir, outFileName);
         Files.createDirectories(outfile.getParentFile().toPath());
         final String javaAgent = getJavaAgent();
         String creatorSourceContents = null;
@@ -108,6 +103,7 @@ public class BCELifierTestCase extends AbstractTestCase {
     @ParameterizedTest
     @ValueSource(strings = {
     // @formatter:off
+        "org.apache.commons.lang.builder.CompareToBuilder.class",
         "org.apache.commons.lang.builder.ToStringBuilder.class",
         "org.apache.commons.lang.SerializationUtils.class",
         "org.apache.commons.lang.ArrayUtils.class",
