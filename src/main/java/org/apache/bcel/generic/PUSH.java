@@ -162,7 +162,7 @@ public final class PUSH implements CompoundInstruction, VariableLengthInstructio
             instruction = new LDC(cp.addArrayClass(value));
         }
     }
-    
+
     /**
      * @param cp Constant pool
      * @param value to be pushed
