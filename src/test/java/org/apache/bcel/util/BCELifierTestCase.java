@@ -27,6 +27,7 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import org.apache.bcel.AbstractTestCase;
+import org.apache.bcel.HelloWorldCreator;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Utility;
 import org.junit.jupiter.api.Test;
@@ -105,7 +106,6 @@ public class BCELifierTestCase extends AbstractTestCase {
     @ValueSource(strings = {
     // @formatter:off
         "org.apache.commons.lang.math.Fraction.class",
-        "org.apache.commons.lang.exception.NestableDelegate.class",
         "org.apache.commons.lang.builder.CompareToBuilder.class",
         "org.apache.commons.lang.builder.ToStringBuilder.class",
         "org.apache.commons.lang.SerializationUtils.class",
@@ -139,6 +139,19 @@ public class BCELifierTestCase extends AbstractTestCase {
             assertEquals("Usage: BCELifier className" + EOL + "\tThe class must exist on the classpath" + EOL, outputNoArgs);
         } finally {
             System.setOut(sysout);
+        }
+    }
+
+    @Test
+    public void testHelloWorld() throws Exception {
+        HelloWorldCreator.main(new String[] {});
+        final File workDir = new File("target");
+        final String javaAgent = getJavaAgent();
+        if (javaAgent == null) {
+            assertEquals("Hello World!" + EOL, exec(workDir, "java", "-cp", CLASSPATH, "org.apache.bcel.HelloWorld"));
+        } else {
+            String runtimeExecJavaAgent = javaAgent.replace("jacoco.exec", "jacoco_org.apache.bcel.HelloWorld.exec");
+            assertEquals("Hello World!" + EOL, exec(workDir, "java", runtimeExecJavaAgent, "-cp", CLASSPATH, "org.apache.bcel.HelloWorld"));
         }
     }
 }
