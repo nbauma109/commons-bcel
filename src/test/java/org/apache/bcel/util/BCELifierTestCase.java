@@ -26,12 +26,13 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
+import org.apache.bcel.AbstractTestCase;
 import org.apache.bcel.classfile.JavaClass;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-public class BCELifierTestCase {
+public class BCELifierTestCase extends AbstractTestCase {
 
     private static final String EOL = System.lineSeparator();
 
@@ -77,7 +78,13 @@ public class BCELifierTestCase {
             bcelifier.start();
         }
         assertEquals("", exec(workDir, "javac", "-cp", "classes", outfile.getName()));
-        assertEquals("", exec(workDir, "java", "-cp", "." + File.pathSeparator + "classes", outfile.getName().replace(".java", "")));
+        String javaAgent = getJavaAgent();
+        if (javaAgent == null) {
+            assertEquals("", exec(workDir, "java", "-cp", "." + File.pathSeparator + "classes", outfile.getName().replace(".java", "")));
+        } else {
+            javaAgent = javaAgent.replace("jacoco.exec", "jacoco_" + outfile.getName() + ".exec");
+            assertEquals("", exec(workDir, "java", javaAgent, "-cp", "." + File.pathSeparator + "classes", outfile.getName().replace(".java", "")));
+        }
         final String output = exec(workDir, "javap", "-p", "-c", infile.getName());
         assertEquals(canonHashRef(initial), canonHashRef(output));
     }
