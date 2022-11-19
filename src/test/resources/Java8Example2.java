@@ -4,7 +4,7 @@ import java.util.stream.*;
 
 public class Java8Example2 implements java.io.Serializable, Runnable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1234567891234567891L;
     public static final float E = 2.7182818284590452354f;
     public static final double PI = 3.14159265358979323846;
     public static final char DOT = '.';
@@ -38,7 +38,9 @@ public class Java8Example2 implements java.io.Serializable, Runnable {
         STRING_BUFFER.append(frem(Float.NaN, Float.NaN));
         STRING_BUFFER.append(frem(E, E));
         STRING_BUFFER.append(drem(Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY));
+        STRING_BUFFER.append(drem(Double.NaN, Double.NaN));
         STRING_BUFFER.append(drem(PI, PI));
+        STRING_BUFFER.append(serialVersionUID);
         STRING_BUFFER.append(Arrays.deepToString(MULTI_ARRAY));
     }
 
