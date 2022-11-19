@@ -61,4 +61,10 @@ public class Java4Example {
                 throw new IllegalArgumentException();
         }
     }
+
+    public static void main(String[] args) {
+        for (int i = 0; i < args.length; i++) {
+            System.out.println(args[i]);
+        }
+    }
 }
