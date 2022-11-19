@@ -26,12 +26,13 @@ public class VerifyJavaMathTestCase extends AbstractVerifierTestCase {
 
     @Test
     @Disabled
+    //@EnabledOnJre(JRE.JAVA_8)
     public void testBigDecimal() throws ClassNotFoundException {
         assertTrue(doAllPasses("java.math.BigDecimal"));
     }
 
-    @Test
     @Disabled
+    @Test
     public void testBigInteger() throws ClassNotFoundException {
         assertTrue(doAllPasses("java.math.BigInteger"));
     }
