@@ -32,19 +32,33 @@ public class Java4Example {
 
     void tableSwitch(int inputValue) {
         switch (inputValue) {
-            case 1:  System.out.println("One");
-            case 2:  System.out.println("Two");
-            case 3:  System.out.println("Three");
-            default: throw new IllegalArgumentException();
+            case 1:
+                System.out.println("One");
+                break;
+            case 2:
+                System.out.println("Two");
+                break;
+            case 3:
+                System.out.println("Three");
+                break;
+            default:
+                throw new IllegalArgumentException();
         }
     }
 
     void lookupSwitch(int inputValue) {
         switch (inputValue) {
-            case 1:  System.out.println("One");
-            case 1000:  System.out.println("One thousand");
-            case 1000000:  System.out.println("One million");
-            default: throw new IllegalArgumentException();
+            case 1:
+                System.out.println("One");
+                break;
+            case 1000:
+                System.out.println("One thousand");
+                break;
+            case 1000000:
+                System.out.println("One million");
+                break;
+            default:
+                throw new IllegalArgumentException();
         }
     }
 }
