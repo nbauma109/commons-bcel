@@ -18,7 +18,6 @@ package org.apache.bcel.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -59,14 +58,7 @@ public class BCELifierTestCase {
                 sb.append(new String(buff, 0, len));
             }
             String output = sb.toString();
-            int exitCode = proc.waitFor();
-            if (exitCode != 0) {
-                if (output.isEmpty()) {
-                    fail("Exit code: " + exitCode);
-                } else {
-                    fail(output);
-                }
-            }
+            assertEquals(0, proc.waitFor(), output);
             return output;
         }
     }
