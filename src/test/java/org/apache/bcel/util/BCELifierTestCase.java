@@ -108,7 +108,7 @@ public class BCELifierTestCase extends AbstractTestCase {
     @ParameterizedTest
     @ValueSource(strings = {
     // @formatter:off
-        "org.apache.commons.lang.builder.ToStringStyle.class",
+        "org.apache.commons.lang.builder.ToStringBuilder.class",
         "org.apache.commons.lang.SerializationUtils.class",
         "org.apache.commons.lang.ArrayUtils.class",
         "target/test-classes/Java8Example.class",
