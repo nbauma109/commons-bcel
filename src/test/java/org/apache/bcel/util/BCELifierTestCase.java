@@ -109,6 +109,7 @@ public class BCELifierTestCase extends AbstractTestCase {
     @ValueSource(strings = {
     // @formatter:off
         "org.apache.commons.lang.SerializationUtils.class",
+        "org.apache.commons.lang.ArrayUtils.class",
         "target/test-classes/Java8Example.class",
         "target/test-classes/Java8Example2.class",
         "target/test-classes/Java4Example.class"
