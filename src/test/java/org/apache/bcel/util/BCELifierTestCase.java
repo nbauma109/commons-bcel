@@ -26,7 +26,6 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-
 import org.apache.bcel.AbstractTestCase;
 import org.apache.bcel.classfile.JavaClass;
 import org.junit.jupiter.api.Test;
@@ -67,14 +66,21 @@ public class BCELifierTestCase extends AbstractTestCase {
     }
 
     private void testClassOnPath(final String javaClassFileName) throws Exception {
-        // Get javap of the input class
-        final String initial = exec(null, "javap", "-p", "-c", javaClassFileName);
-
         final File workDir = new File("target");
         final File infile = new File(javaClassFileName);
         final JavaClass javaClass = BCELifier.getJavaClass(infile.getName().replace(JavaClass.EXTENSION, ""));
         assertNotNull(javaClass);
-        final File outfile = new File(workDir, infile.getName().replace(JavaClass.EXTENSION, "Creator.java"));
+
+        // Get javap of the input class
+        final String initial = exec(null, "javap", "-cp", CLASSPATH, "-p", "-c", javaClass.getClassName());
+        final StringBuilder outFileName = new StringBuilder();
+        if (!javaClass.getPackageName().isEmpty()) {
+            outFileName.append(javaClass.getPackageName().replace('.', '/'));
+            outFileName.append('/');
+        }
+        outFileName.append(javaClass.getSourceFileName().replace(".java", "Creator.java"));
+        final File outfile = new File(workDir, outFileName.toString());
+        Files.createDirectories(outfile.getParentFile().toPath());
         final String javaAgent = getJavaAgent();
         String creatorSourceContents = null;
         if (javaAgent == null) {
@@ -84,12 +90,12 @@ public class BCELifierTestCase extends AbstractTestCase {
             creatorSourceContents = exec(workDir, "java", runtimeExecJavaAgent, "-cp", CLASSPATH, "org.apache.bcel.util.BCELifier", javaClass.getClassName());
         }
         Files.write(outfile.toPath(), creatorSourceContents.getBytes(StandardCharsets.UTF_8));
-        assertEquals("", exec(workDir, "javac", "-cp", "classes", outfile.getName()));
+        assertEquals("", exec(workDir, "javac", "-cp", CLASSPATH, outFileName.toString()));
         if (javaAgent == null) {
-            assertEquals("", exec(workDir, "java", "-cp", CLASSPATH, outfile.getName().replace(".java", "")));
+            assertEquals("", exec(workDir, "java", "-cp", CLASSPATH, javaClass.getClassName() + "Creator"));
         } else {
             String runtimeExecJavaAgent = javaAgent.replace("jacoco.exec", "jacoco_" + outfile.getName() + ".exec");
-            assertEquals("", exec(workDir, "java", runtimeExecJavaAgent, "-cp", CLASSPATH, outfile.getName().replace(".java", "")));
+            assertEquals("", exec(workDir, "java", runtimeExecJavaAgent, "-cp", CLASSPATH, javaClass.getClassName() + "Creator"));
         }
         final String output = exec(workDir, "javap", "-p", "-c", infile.getName());
         assertEquals(canonHashRef(initial), canonHashRef(output));
@@ -102,6 +108,7 @@ public class BCELifierTestCase extends AbstractTestCase {
     @ParameterizedTest
     @ValueSource(strings = {
     // @formatter:off
+        "org.apache.commons.lang.SerializationUtils.class",
         "target/test-classes/Java8Example.class",
         "target/test-classes/Java8Example2.class",
         "target/test-classes/Java4Example.class"
