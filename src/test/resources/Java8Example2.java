@@ -9,6 +9,8 @@ public class Java8Example2 implements java.io.Serializable, Runnable {
     public static final double PI = 3.14159265358979323846;
     public static final char DOT = '.';
     public static final short PORT = 22;
+    public static final float ZERO = 0f;
+    public static final float ONE = 1f;
     public static final byte INVOKESTATIC = (byte) 184;
     public static final int[][] MULTI_ARRAY = {{0}, {1}};
     public static final int[][] MULTI_ARRAY2 = new int[2][2];
