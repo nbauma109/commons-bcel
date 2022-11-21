@@ -135,9 +135,10 @@ class BCELFactory extends EmptyVisitor {
                 } else {
                     printWriter.print("    ");
                 }
-                if (!visitInstruction(i)) {
+                // Could be the reason why we're missing coverage on array instructions 
+                //if (!visitInstruction(i)) {
                     i.accept(this);
-                }
+                //}
             }
             updateBranchTargets();
             updateExceptionHandlers();
