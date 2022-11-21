@@ -123,7 +123,7 @@ public class BCELifierTestCase extends AbstractTestCase {
         "org.apache.commons.lang.builder.CompareToBuilder.class",
         "org.apache.commons.lang.builder.ToStringBuilder.class",
         "org.apache.commons.lang.SerializationUtils.class",
-        "org.apache.commons.lang.StringEscapeUtils.class",
+        "org.apache.commons.lang.builder.StandardToStringStyle.class",
         "org.apache.commons.lang.ArrayUtils.class",
         "target/test-classes/Java8Example.class",
         "target/test-classes/Java8Example2.class",
