@@ -136,6 +136,7 @@ class BCELFactory extends EmptyVisitor {
                     printWriter.print("    ");
                 }
                 if (!visitInstruction(i)) {
+                    // Do a deep visit of i if i wasn't meant to be handled directly by visitInstruction(...)
                     i.accept(this);
                 }
             }
