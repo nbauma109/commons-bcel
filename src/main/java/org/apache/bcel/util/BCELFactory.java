@@ -281,7 +281,10 @@ class BCELFactory extends EmptyVisitor {
 
     private boolean visitInstruction(final Instruction i) {
         final short opcode = i.getOpcode();
-        if (InstructionConst.getInstruction(opcode) != null && !(i instanceof ConstantPushInstruction) && !(i instanceof ReturnInstruction) && !(i instanceof ArrayInstruction)) { 
+        if (InstructionConst.getInstruction(opcode) != null
+          && !(i instanceof ConstantPushInstruction)
+          && !(i instanceof ReturnInstruction)
+          && !(i instanceof ArrayInstruction)) { // handle directly below, else do the deep visit with accept(...)
             printWriter.println("il.append(InstructionConst." + i.getName().toUpperCase(Locale.ENGLISH) + ");");
             return true;
         }
