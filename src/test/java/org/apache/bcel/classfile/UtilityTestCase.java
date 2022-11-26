@@ -140,7 +140,8 @@ public class UtilityTestCase {
         assertNotNull(javaClass);
         for (final Method method : javaClass.getMethods()) {
             if ("<init>".equals(method.getName())) {
-                assertTrue(method.getCode().toString().contains("12:   multianewarray\t<[[I>\t2 ("), method.getCode().toString());
+                final String code = method.getCode().toString(false);
+                assertTrue(code.contains("12:   multianewarray\t<[[I>\t2"), code);
             }
         }
     }
