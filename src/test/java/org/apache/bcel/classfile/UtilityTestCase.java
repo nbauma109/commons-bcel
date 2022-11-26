@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.junit.jupiter.api.Test;
+import java.util.Arrays;
 
 public class UtilityTestCase {
 
