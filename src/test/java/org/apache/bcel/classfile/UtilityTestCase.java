@@ -19,9 +19,11 @@ package org.apache.bcel.classfile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.bcel.Const;
+import org.apache.bcel.Repository;
 import org.junit.jupiter.api.Test;
 
 public class UtilityTestCase {
@@ -127,5 +129,19 @@ public class UtilityTestCase {
             "class signature");
         assertEquals("<K extends Object, V extends Object> extends Object",
             Utility.signatureToString("<K:Ljava/lang/Object;V:Ljava/lang/Object;>Ljava/lang/Object;"), "class signature");
+    }
+
+    @Test
+    public void testCodeToString() throws Exception {
+        class CodeToString {
+            int[][] a = new int[0][0];
+        }
+        final JavaClass javaClass = Repository.lookupClass(CodeToString.class);
+        assertNotNull(javaClass);
+        for (final Method method : javaClass.getMethods()) {
+            if ("<init>".equals(method.getName())) {
+                assertTrue(method.getCode().toString().contains("12:   multianewarray\t<[[I>\t2 (17)"));
+            }
+        }
     }
 }
