@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.apache.bcel.Const;
+import org.apache.bcel.util.Args;
 import org.apache.commons.lang3.ArrayUtils;
 
 /**
@@ -63,11 +64,14 @@ public final class NestMembers extends Attribute {
     public NestMembers(final int nameIndex, final int length, final int[] classes, final ConstantPool constantPool) {
         super(Const.ATTR_NEST_MEMBERS, nameIndex, length, constantPool);
         this.classes = classes != null ? classes : ArrayUtils.EMPTY_INT_ARRAY;
+        Args.requireU2(this.classes.length, "classes.length");
     }
 
     /**
      * Initialize from another object. Note that both objects use the same references (shallow copy). Use copy() for a
      * physical copy.
+     *
+     * @param c Source to copy.
      */
     public NestMembers(final NestMembers c) {
         this(c.getNameIndex(), c.getLength(), c.getClasses(), c.getConstantPool());
@@ -90,7 +94,7 @@ public final class NestMembers extends Attribute {
     @Override
     public Attribute copy(final ConstantPool constantPool) {
         final NestMembers c = (NestMembers) clone();
-        if (classes != null) {
+        if (classes.length > 0) {
             c.classes = classes.clone();
         }
         c.setConstantPool(constantPool);
@@ -132,7 +136,7 @@ public final class NestMembers extends Attribute {
      * @return Length of classes table.
      */
     public int getNumberClasses() {
-        return classes == null ? 0 : classes.length;
+        return classes.length;
     }
 
     /**

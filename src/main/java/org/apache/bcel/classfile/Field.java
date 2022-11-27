@@ -84,6 +84,8 @@ public final class Field extends FieldOrMethod {
     /**
      * Initialize from another object. Note that both objects use the same references (shallow copy). Use clone() for a
      * physical copy.
+     *
+     * @param c Source to copy.
      */
     public Field(final Field c) {
         super(c);
@@ -160,7 +162,7 @@ public final class Field extends FieldOrMethod {
     }
 
     /**
-     * Return string representation close to declaration format, `public static final short MAX = 100', e.g..
+     * Return string representation close to declaration format, 'public static final short MAX = 100', e.g..
      *
      * @return String representation of field, including the signature.
      */

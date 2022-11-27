@@ -39,7 +39,7 @@ public final class Unknown extends Attribute {
     private final String name;
 
     /**
-     * Create a non-standard attribute.
+     * Constructs a new instance for a non-standard attribute.
      *
      * @param nameIndex Index in constant pool
      * @param length Content length in bytes
@@ -49,11 +49,11 @@ public final class Unknown extends Attribute {
     public Unknown(final int nameIndex, final int length, final byte[] bytes, final ConstantPool constantPool) {
         super(Const.ATTR_UNKNOWN, nameIndex, length, constantPool);
         this.bytes = bytes;
-        name = constantPool.getConstantUtf8(nameIndex).getBytes();
+        this.name = constantPool.getConstantUtf8(nameIndex).getBytes();
     }
 
     /**
-     * Construct object from input stream.
+     * Constructs a new instance from an input stream.
      *
      * @param nameIndex Index in constant pool
      * @param length Content length in bytes
@@ -70,8 +70,7 @@ public final class Unknown extends Attribute {
     }
 
     /**
-     * Initialize from another object. Note that both objects use the same references (shallow copy). Use clone() for a
-     * physical copy.
+     * Constructs a new instance from another instance. Note that both objects use the same references (shallow copy). Use clone() for a physical copy.
      *
      * @param unknown Source.
      */
@@ -104,7 +103,7 @@ public final class Unknown extends Attribute {
     }
 
     /**
-     * Dump unknown bytes to file stream.
+     * Dumps unknown bytes to file stream.
      *
      * @param file Output file stream
      * @throws IOException if an I/O error occurs.

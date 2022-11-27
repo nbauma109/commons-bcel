@@ -21,6 +21,7 @@ import java.io.DataInput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.util.Args;
@@ -175,11 +176,15 @@ public final class Signature extends Attribute {
     public Signature(final int nameIndex, final int length, final int signatureIndex, final ConstantPool constantPool) {
         super(Const.ATTR_SIGNATURE, nameIndex, Args.require(length, 2, "Signature length attribute"), constantPool);
         this.signatureIndex = signatureIndex;
+        // validate:
+        Objects.requireNonNull(constantPool.getConstantUtf8(signatureIndex), "constantPool.getConstantUtf8(signatureIndex)");
     }
 
     /**
      * Initialize from another object. Note that both objects use the same references (shallow copy). Use clone() for a
      * physical copy.
+     *
+     * @param c Source to copy.
      */
     public Signature(final Signature c) {
         this(c.getNameIndex(), c.getLength(), c.getSignatureIndex(), c.getConstantPool());

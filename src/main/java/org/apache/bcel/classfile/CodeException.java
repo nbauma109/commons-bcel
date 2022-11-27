@@ -22,10 +22,31 @@ import java.io.IOException;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.Constants;
+import org.apache.bcel.util.Args;
 
 /**
  * This class represents an entry in the exception table of the <em>Code</em> attribute and is used only there. It
  * contains a range in which a particular exception handler is active.
+ *
+ * <pre>
+ * Code_attribute {
+ *   u2 attribute_name_index;
+ *   u4 attribute_length;
+ *   u2 max_stack;
+ *   u2 max_locals;
+ *   u4 code_length;
+ *   u1 code[code_length];
+ *   u2 exception_table_length;
+ *   {
+ *     u2 start_pc;
+ *     u2 end_pc;
+ *     u2 handler_pc;
+ *     u2 catch_type;
+ *   } exception_table[exception_table_length];
+ *   u2 attributes_count;
+ *   attribute_info attributes[attributes_count];
+ * }
+ * </pre>
  *
  * @see Code
  */
@@ -35,25 +56,34 @@ public final class CodeException implements Cloneable, Node, Constants {
      * Empty array.
      */
     static final CodeException[] EMPTY_CODE_EXCEPTION_ARRAY = {};
-    private int startPc; // Range in the code the exception handler is
-    private int endPc; // active. startPc is inclusive, endPc exclusive
-    private int handlerPc; /*
-                            * Starting address of exception handler, i.e., an offset from start of code.
-                            */
 
-    private int catchType; /*
-                            * If this is zero the handler catches any exception, otherwise it points to the exception class which is to be caught.
-                            */
+    /** Range in the code the exception handler. */
+    private int startPc;
+
+    /** active. startPc is inclusive, endPc exclusive. */
+    private int endPc;
 
     /**
-     * Initialize from another object.
+     * Starting address of exception handler, i.e., an offset from start of code.
+     */
+    private int handlerPc;
+
+    /*
+     * If this is zero the handler catches any exception, otherwise it points to the exception class which is to be caught.
+     */
+    private int catchType;
+
+    /**
+     * Constructs a new instance from another instance.
+     *
+     * @param c Source for copying.
      */
     public CodeException(final CodeException c) {
         this(c.getStartPC(), c.getEndPC(), c.getHandlerPC(), c.getCatchType());
     }
 
     /**
-     * Construct object from file stream.
+     * Constructs a new instance from a DataInput.
      *
      * @param file Input stream
      * @throws IOException if an I/O error occurs.
@@ -63,6 +93,8 @@ public final class CodeException implements Cloneable, Node, Constants {
     }
 
     /**
+     * Constructs a new instance.
+     *
      * @param startPc Range in the code the exception handler is active, startPc is inclusive while
      * @param endPc is exclusive
      * @param handlerPc Starting address of exception handler, i.e., an offset from start of code.
@@ -70,10 +102,10 @@ public final class CodeException implements Cloneable, Node, Constants {
      *        caught.
      */
     public CodeException(final int startPc, final int endPc, final int handlerPc, final int catchType) {
-        this.startPc = startPc;
-        this.endPc = endPc;
-        this.handlerPc = handlerPc;
-        this.catchType = catchType;
+        this.startPc = Args.requireU2(startPc, "startPc");
+        this.endPc = Args.requireU2(endPc, "endPc");
+        this.handlerPc = Args.requireU2(handlerPc, "handlerPc");
+        this.catchType = Args.requireU2(catchType, "catchType");
     }
 
     /**
@@ -100,7 +132,7 @@ public final class CodeException implements Cloneable, Node, Constants {
     }
 
     /**
-     * Dump code exception to file stream in binary format.
+     * Dumps code exception to file stream in binary format.
      *
      * @param file Output file stream
      * @throws IOException if an I/O error occurs.
@@ -181,6 +213,8 @@ public final class CodeException implements Cloneable, Node, Constants {
     }
 
     /**
+     * @param cp constant pool source.
+     * @param verbose Output more if true.
      * @return String representation.
      */
     public String toString(final ConstantPool cp, final boolean verbose) {

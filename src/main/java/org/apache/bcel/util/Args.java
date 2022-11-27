@@ -54,6 +54,20 @@ public class Args {
     }
 
     /**
+     * Requires a u1 value.
+     *
+     * @param value   The value to test.
+     * @param message The message prefix
+     * @return The value to test.
+     */
+    public static int requireU1(final int value, final String message) {
+        if (value < 0 || value > Const.MAX_BYTE) {
+            throw new ClassFormatException(String.format("%s [Value out of range (0 - %,d) for type u1: %,d]", message, Const.MAX_BYTE, value));
+        }
+        return value;
+    }
+
+    /**
      * Requires a u2 value of at least {@code min} and not above {@code max}.
      *
      * @param value   The value to test.
@@ -64,10 +78,10 @@ public class Args {
      */
     public static int requireU2(final int value, final int min, final int max, final String message) {
         if (max > Const.MAX_SHORT) {
-            throw new IllegalArgumentException(String.format("Programming error: %,d > %,d", max, Const.MAX_SHORT));
+            throw new IllegalArgumentException(String.format("%s programming error: max %,d > %,d", message, max, Const.MAX_SHORT));
         }
         if (min < 0) {
-            throw new IllegalArgumentException(String.format("Programming error: %,d < 0", min));
+            throw new IllegalArgumentException(String.format("%s programming error: min %,d < 0", message, min));
         }
         if (value < min || value > max) {
             throw new ClassFormatException(String.format("%s [Value out of range (%,d - %,d) for type u2: %,d]", message, min, Const.MAX_SHORT, value));
@@ -84,7 +98,7 @@ public class Args {
      * @return The value to test.
      */
     public static int requireU2(final int value, final int min, final String message) {
-        return requireU2(value, 0, Const.MAX_SHORT, message);
+        return requireU2(value, min, Const.MAX_SHORT, message);
     }
 
     /**
@@ -96,5 +110,35 @@ public class Args {
      */
     public static int requireU2(final int value, final String message) {
         return requireU2(value, 0, message);
+    }
+
+    /**
+     * Requires a u4 value of at least {@code min}.
+     *
+     * @param value   The value to test.
+     * @param min     The minimum required value.
+     * @param message The message prefix
+     * @return The value to test.
+     */
+    public static int requireU4(final int value, final int min, final String message) {
+        if (min < 0) {
+            throw new IllegalArgumentException(String.format("%s programming error: min %,d < 0", message, min));
+        }
+        if (value < min) {
+            throw new ClassFormatException(
+                    String.format("%s [Value out of range (%,d - %,d) for type u2: %,d]", message, min, Integer.MAX_VALUE, value & 0xFFFFFFFFL));
+        }
+        return value;
+    }
+
+    /**
+     * Requires a u4 value.
+     *
+     * @param value   The value to test.
+     * @param message The message prefix
+     * @return The value to test.
+     */
+    public static int requireU4(final int value, final String message) {
+        return requireU4(value, 0, message);
     }
 }

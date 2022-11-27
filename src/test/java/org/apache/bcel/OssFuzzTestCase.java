@@ -42,6 +42,25 @@ public class OssFuzzTestCase {
         testOssFuzzReproducer("52168");
     }
 
+    @Test
+    public void testIssue53543() throws Exception {
+        testOssFuzzReproducer("53543");
+    }
+
+    /*
+     * The original issue 53544 was a false positive but reviewing that issue
+     * did find a valid issue nearby.
+     */
+    @Test
+    public void testIssue53544a() throws Exception {
+        testOssFuzzReproducer("53544a");
+    }
+
+    @Test
+    public void testIssue53620() throws Exception {
+        testOssFuzzReproducer("53620");
+    }
+
     private void testOssFuzzReproducer(final String issue) throws Exception {
         final File reproducerFile = new File("target/test-classes/ossfuzz/issue" + issue + "/Test.class");
         try (final FileInputStream reproducerInputStream = new FileInputStream(reproducerFile)) {

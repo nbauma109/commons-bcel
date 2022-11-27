@@ -31,6 +31,8 @@ import org.apache.bcel.Const;
  */
 public final class StackMapType implements Cloneable {
 
+    public static final StackMapType[] EMPTY_ARRAY = {}; // must be public because BCELifier code generator writes calls to it
+
     private byte type;
     private int index = -1; // Index to CONSTANT_Class or offset
     private ConstantPool constantPool;
@@ -61,7 +63,7 @@ public final class StackMapType implements Cloneable {
 
     private byte checkType(final byte type) {
         if (type < Const.ITEM_Bogus || type > Const.ITEM_NewObject) {
-            throw new IllegalArgumentException("Illegal type for StackMapType: " + type);
+            throw new ClassFormatException("Illegal type for StackMapType: " + type);
         }
         return type;
     }

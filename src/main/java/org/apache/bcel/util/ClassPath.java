@@ -41,6 +41,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Utility;
 
 /**
  * Loads class files from the CLASSPATH. Inspired by sun.tools.ClassPath.
@@ -261,7 +262,7 @@ public class ClassPath implements Closeable {
 
         @Override
         protected String toEntryName(final String name, final String suffix) {
-            return packageToFolder(name) + suffix;
+            return Utility.packageToPath(name) + suffix;
         }
 
     }
@@ -282,7 +283,7 @@ public class ClassPath implements Closeable {
 
         @Override
         ClassFile getClassFile(final String name, final String suffix) {
-            final Path resolved = modulePath.resolve(packageToFolder(name) + suffix);
+            final Path resolved = modulePath.resolve(Utility.packageToPath(name) + suffix);
             if (Files.exists(resolved)) {
                 return new ClassFile() {
 
@@ -423,7 +424,7 @@ public class ClassPath implements Closeable {
 
         @Override
         protected String toEntryName(final String name, final String suffix) {
-            return "classes/" + packageToFolder(name) + suffix;
+            return "classes/" + Utility.packageToPath(name) + suffix;
         }
 
     }
@@ -513,10 +514,6 @@ public class ClassPath implements Closeable {
         }
     }
 
-    static String packageToFolder(final String name) {
-        return name.replace('.', '/');
-    }
-
     private final String classPathString;
 
     private final ClassPath parent;
@@ -580,7 +577,7 @@ public class ClassPath implements Closeable {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
@@ -590,7 +587,7 @@ public class ClassPath implements Closeable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        ClassPath other = (ClassPath) obj;
+        final ClassPath other = (ClassPath) obj;
         return Objects.equals(classPathString, other.classPathString);
     }
 
@@ -670,32 +667,40 @@ public class ClassPath implements Closeable {
     }
 
     /**
+     * Gets an InputStream.
+     * <p>
+     * The caller is responsible for closing the InputStream.
+     * </p>
      * @param name fully qualified class name, e.g. java.lang.String
      * @return input stream for class
      * @throws IOException if an I/O error occurs.
      */
     public InputStream getInputStream(final String name) throws IOException {
-        return getInputStream(packageToFolder(name), JavaClass.EXTENSION);
+        return getInputStream(Utility.packageToPath(name), JavaClass.EXTENSION);
     }
 
     /**
-     * Return stream for class or resource on CLASSPATH.
+     * Gets an InputStream for a class or resource on the classpath.
+     * <p>
+     * The caller is responsible for closing the InputStream.
+     * </p>
      *
-     * @param name fully qualified file name, e.g. java/lang/String
+     * @param name   fully qualified file name, e.g. java/lang/String
      * @param suffix file name ends with suff, e.g. .java
      * @return input stream for file on class path
      * @throws IOException if an I/O error occurs.
      */
     public InputStream getInputStream(final String name, final String suffix) throws IOException {
-        InputStream inputStream = null;
         try {
             final java.lang.ClassLoader classLoader = getClass().getClassLoader();
-            inputStream = classLoader == null ? null : classLoader.getResourceAsStream(name + suffix); // may return null
+            @SuppressWarnings("resource") // closed by caller
+            final
+            InputStream inputStream = classLoader == null ? null : classLoader.getResourceAsStream(name + suffix);
+            if (inputStream != null) {
+                return inputStream;
+            }
         } catch (final Exception ignored) {
             // ignored
-        }
-        if (inputStream != null) {
-            return inputStream;
         }
         return getClassFile(name, suffix).getInputStream();
     }

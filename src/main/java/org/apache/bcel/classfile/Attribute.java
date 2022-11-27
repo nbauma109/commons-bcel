@@ -27,9 +27,17 @@ import org.apache.bcel.Const;
 import org.apache.bcel.util.Args;
 
 /**
- * Abstract super class for <em>Attribute</em> objects. Currently the <em>ConstantValue</em>, <em>SourceFile</em>,
- * <em>Code</em>, <em>Exceptiontable</em>, <em>LineNumberTable</em>, <em>LocalVariableTable</em>, <em>InnerClasses</em>
- * and <em>Synthetic</em> attributes are supported. The <em>Unknown</em> attribute stands for non-standard-attributes.
+ * Abstract super class for <em>Attribute</em> objects. Currently the <em>ConstantValue</em>, <em>SourceFile</em>, <em>Code</em>, <em>Exceptiontable</em>,
+ * <em>LineNumberTable</em>, <em>LocalVariableTable</em>, <em>InnerClasses</em> and <em>Synthetic</em> attributes are supported. The <em>Unknown</em> attribute
+ * stands for non-standard-attributes.
+ *
+ * <pre>
+ * attribute_info {
+ *   u2 attribute_name_index;
+ *   u4 attribute_length;
+ *   u1 info[attribute_length];
+ * }
+ * </pre>
  *
  * @see ConstantValue
  * @see SourceFile
@@ -101,7 +109,7 @@ public abstract class Attribute implements Cloneable, Node {
      */
     public static Attribute readAttribute(final DataInput dataInput, final ConstantPool constantPool) throws IOException {
         byte tag = Const.ATTR_UNKNOWN; // Unknown attribute
-        // Get class name from constant pool via `name_index' indirection
+        // Get class name from constant pool via 'name_index' indirection
         final int nameIndex = dataInput.readUnsignedShort();
         final String name = constantPool.getConstantUtf8(nameIndex).getBytes();
 
@@ -116,7 +124,7 @@ public abstract class Attribute implements Cloneable, Node {
             }
         }
 
-        // Call proper constructor, depending on `tag'
+        // Call proper constructor, depending on 'tag'
         switch (tag) {
         case Const.ATTR_UNKNOWN:
             final Object r = READERS.get(name);
@@ -238,10 +246,26 @@ public abstract class Attribute implements Cloneable, Node {
     @java.lang.Deprecated
     protected ConstantPool constant_pool; // TODO make private (has getter & setter)
 
+    /**
+     * Constructs an instance.
+     *
+     * <pre>
+     * attribute_info {
+     *   u2 attribute_name_index;
+     *   u4 attribute_length;
+     *   u1 info[attribute_length];
+     * }
+     * </pre>
+     *
+     * @param tag tag.
+     * @param nameIndex u2 name index.
+     * @param length u4 length.
+     * @param constantPool constant pool.
+     */
     protected Attribute(final byte tag, final int nameIndex, final int length, final ConstantPool constantPool) {
         this.tag = tag;
         this.name_index = Args.requireU2(nameIndex, 0, constantPool.getLength(), getClass().getSimpleName() + " name index");
-        this.length = length;
+        this.length = Args.requireU4(length, getClass().getSimpleName() + " attribute length");
         this.constant_pool = constantPool;
     }
 
@@ -271,12 +295,13 @@ public abstract class Attribute implements Cloneable, Node {
     }
 
     /**
-     * @return deep copy of this attribute
+     * @param constantPool constant pool to save.
+     * @return deep copy of this attribute.
      */
     public abstract Attribute copy(ConstantPool constantPool);
 
     /**
-     * Dump attribute to file stream in binary format.
+     * Dumps attribute to file stream in binary format.
      *
      * @param file Output file stream
      * @throws IOException if an I/O error occurs.
