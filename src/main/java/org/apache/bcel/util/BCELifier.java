@@ -370,7 +370,7 @@ public class BCELifier extends org.apache.bcel.classfile.EmptyVisitor {
 
     /**
      * Visits a {@link StackMapType} object.
-     * @param obj object to visit
+     * @param stackMapType object to visit
      * @since 6.7.1
      */
     @Override
