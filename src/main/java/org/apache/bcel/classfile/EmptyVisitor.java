@@ -309,7 +309,7 @@ public class EmptyVisitor implements Visitor {
     @Override
     public void visitStackMapEntry(final StackMapEntry obj) {
     }
-    
+
     /**
      * Visits a {@link StackMapType} object.
      * @param obj object to visit
