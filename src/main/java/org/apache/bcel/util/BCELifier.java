@@ -366,7 +366,6 @@ public class BCELifier extends org.apache.bcel.classfile.EmptyVisitor {
         printWriter.print(", ");
         visitStackMapTypeArray(stackMapEntry.getTypesOfStackItems());
         printWriter.print(", _cp.getConstantPool())");
-        
     }
 
     /**
@@ -389,7 +388,7 @@ public class BCELifier extends org.apache.bcel.classfile.EmptyVisitor {
         }
         printWriter.print(", _cp.getConstantPool())");
     }
-    
+
     private void visitStackMapTypeArray(final StackMapType[] types) {
         if (ArrayUtils.isEmpty(types)) {
             printWriter.print("null"); // null translates to StackMapType.EMPTY_ARRAY
