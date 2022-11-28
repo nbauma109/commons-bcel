@@ -246,6 +246,20 @@ public final class Code extends Attribute {
         }
         return null;
     }
+    
+    /**
+     * Finds the first attribute of {@link StackMap} instance.
+     * @return StackMap of Code, if it has one, else null.
+     * @since 6.7.1
+     */
+    public StackMap getStackMap() {
+        for (final Attribute attribute : attributes) {
+            if (attribute instanceof StackMap) {
+                return (StackMap) attribute;
+            }
+        }
+        return null;
+    }
 
     /**
      * @return LocalVariableTable of Code, if it has one
