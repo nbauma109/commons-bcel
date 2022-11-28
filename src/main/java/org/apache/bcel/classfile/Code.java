@@ -246,7 +246,7 @@ public final class Code extends Attribute {
         }
         return null;
     }
-    
+
     /**
      * Finds the first attribute of {@link StackMap} instance.
      * @return StackMap of Code, if it has one, else null.
