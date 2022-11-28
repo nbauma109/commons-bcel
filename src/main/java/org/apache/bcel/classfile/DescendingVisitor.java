@@ -544,7 +544,7 @@ public class DescendingVisitor implements Visitor {
         var.accept(visitor);
         stack.pop();
     }
-    
+
     @Override
     public void visitSynthetic(final Synthetic attribute) {
         stack.push(attribute);
