@@ -42,7 +42,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 public class BCELifierTestCase extends AbstractTestCase {
 
     private static final String EOL = System.lineSeparator();
-    public static final String CLASSPATH = System.getProperty("java.class.path") + File.pathSeparator + ".";
+    public static final String CLASSPATH = "." + File.pathSeparator + System.getProperty("java.class.path");
 
     // Canonicalise the javap output so it compares better
     private String canonHashRef(String input) {
@@ -215,5 +215,12 @@ public class BCELifierTestCase extends AbstractTestCase {
         assertNotNull(javaClass);
         final BCELifier bcelifier = new BCELifier(javaClass, os);
         bcelifier.start();
+    }
+
+    @Test
+    public void testStackMap() throws Exception {
+        testJavapCompare("StackMapExample");
+        final File workDir = new File("target");
+        assertEquals("Hello World" + EOL, exec(workDir, "java", "-cp", CLASSPATH, "StackMapExample", "Hello"));
     }
 }
