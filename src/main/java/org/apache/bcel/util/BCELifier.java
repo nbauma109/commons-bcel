@@ -336,18 +336,14 @@ public class BCELifier extends org.apache.bcel.classfile.EmptyVisitor {
         printWriter.print("\"), ");
         printWriter.print(stackMap.getLength());
         printWriter.print(", ");
-        if (stackMap.isEmpty()) {
-            printWriter.print("StackMapEntry.EMPTY_ARRAY");
-        } else {
-            printWriter.print("new StackMapEntry[] {");
-            final StackMapEntry[] table = stackMap.getStackMap();
-            for (int i = 0; i < table.length; i++) {
-                table[i].accept(this);
-                if (i < table.length - 1) {
-                    printWriter.print(", ");
-                } else {
-                    printWriter.print(" }");
-                }
+        printWriter.print("new StackMapEntry[] {");
+        final StackMapEntry[] table = stackMap.getStackMap();
+        for (int i = 0; i < table.length; i++) {
+            table[i].accept(this);
+            if (i < table.length - 1) {
+                printWriter.print(", ");
+            } else {
+                printWriter.print(" }");
             }
         }
         printWriter.print(", _cp.getConstantPool())");
