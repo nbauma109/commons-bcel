@@ -217,10 +217,11 @@ public class BCELifierTestCase extends AbstractTestCase {
         bcelifier.start();
     }
 
-    @Test
-    public void testStackMap() throws Exception {
-        testJavapCompare("StackMapExample");
+    @ParameterizedTest
+    @ValueSource(strings = { "StackMapExample" })
+    public void testStackMap(final String className) throws Exception {
+        testJavapCompare(className);
         final File workDir = new File("target");
-        assertEquals("Hello World" + EOL, exec(workDir, "java", "-cp", CLASSPATH, "StackMapExample", "Hello"));
+        assertEquals("Hello World" + EOL, exec(workDir, "java", "-cp", CLASSPATH, className, "Hello"));
     }
 }
