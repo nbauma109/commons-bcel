@@ -118,15 +118,6 @@ public final class StackMap extends Attribute {
         }
     }
 
-    /**
-     * Checks if this stack map is empty.
-     * @return true if this stack map is empty.
-     * @since 6.7.1
-     */
-    public boolean isEmpty() {
-        return table == StackMapEntry.EMPTY_ARRAY;
-    }
-
     public int getMapLength() {
         return table.length;
     }
