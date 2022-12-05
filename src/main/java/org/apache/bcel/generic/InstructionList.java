@@ -458,8 +458,8 @@ public class InstructionList implements Iterable<InstructionHandle> {
     }
 
     /**
-     * Remove instructions from instruction `from' to instruction `to' contained in this list. The user must ensure that
-     * `from' is an instruction before `to', or risk havoc. The corresponding Instruction handles must not be reused!
+     * Remove instructions from instruction 'from' to instruction 'to' contained in this list. The user must ensure that
+     * 'from' is an instruction before 'to', or risk havoc. The corresponding Instruction handles must not be reused!
      *
      * @param from where to start deleting (inclusive)
      * @param to where to end deleting (inclusive)
@@ -486,8 +486,8 @@ public class InstructionList implements Iterable<InstructionHandle> {
     }
 
     /**
-     * Remove instructions from instruction `from' to instruction `to' contained in this list. The user must ensure that
-     * `from' is an instruction before `to', or risk havoc. The corresponding Instruction handles must not be reused!
+     * Remove instructions from instruction 'from' to instruction 'to' contained in this list. The user must ensure that
+     * 'from' is an instruction before 'to', or risk havoc. The corresponding Instruction handles must not be reused!
      *
      * @param from where to start deleting (inclusive)
      * @param to where to end deleting (inclusive)
@@ -503,9 +503,7 @@ public class InstructionList implements Iterable<InstructionHandle> {
     public void dispose() {
         // Traverse in reverse order, because ih.next is overwritten
         for (InstructionHandle ih = end; ih != null; ih = ih.getPrev()) {
-            /*
-             * Causes BranchInstructions to release target and targeters, because it calls dispose() on the contained instruction.
-             */
+            // Causes BranchInstructions to release target and targeters, because it calls dispose() on the contained instruction.
             ih.dispose();
         }
         clear();
@@ -993,7 +991,7 @@ public class InstructionList implements Iterable<InstructionHandle> {
     }
 
     /**
-     * Remove from instruction `prev' to instruction `next' both contained in this list. Throws TargetLostException when one
+     * Remove from instruction 'prev' to instruction 'next' both contained in this list. Throws TargetLostException when one
      * of the removed instruction handles is still being targeted.
      *
      * @param prev where to start deleting (predecessor, exclusive)
@@ -1024,7 +1022,7 @@ public class InstructionList implements Iterable<InstructionHandle> {
         }
         first.setPrev(null); // Completely separated from rest of list
         last.setNext(null);
-        final List<InstructionHandle> targetVec = new ArrayList<>();
+        final List<InstructionHandle> targetList = new ArrayList<>();
         for (InstructionHandle ih = first; ih != null; ih = ih.getNext()) {
             ih.getInstruction().dispose(); // e.g. BranchInstructions release their targets
         }
@@ -1033,7 +1031,7 @@ public class InstructionList implements Iterable<InstructionHandle> {
             next = ih.getNext();
             length--;
             if (ih.hasTargeters()) { // Still got targeters?
-                targetVec.add(ih);
+                targetList.add(ih);
                 buf.append(ih.toString(true)).append(" ");
                 ih.setNext(ih.setPrev(null));
             } else {
@@ -1041,8 +1039,8 @@ public class InstructionList implements Iterable<InstructionHandle> {
             }
         }
         buf.append("}");
-        if (!targetVec.isEmpty()) {
-            throw new TargetLostException(targetVec.toArray(InstructionHandle.EMPTY_ARRAY), buf.toString());
+        if (!targetList.isEmpty()) {
+            throw new TargetLostException(targetList.toArray(InstructionHandle.EMPTY_ARRAY), buf.toString());
         }
     }
 

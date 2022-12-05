@@ -75,7 +75,7 @@ public final class Method extends FieldOrMethod {
     private ParameterAnnotationEntry[] parameterAnnotationEntries;
 
     /**
-     * Empty constructor, all attributes have to be defined via `setXXX' methods. Use at your own risk.
+     * Empty constructor, all attributes have to be defined via 'setXXX' methods. Use at your own risk.
      */
     public Method() {
     }
@@ -105,6 +105,8 @@ public final class Method extends FieldOrMethod {
     /**
      * Initialize from another object. Note that both objects use the same references (shallow copy). Use clone() for a
      * physical copy.
+     *
+     * @param c Source to copy.
      */
     public Method(final Method c) {
         super(c);
@@ -236,7 +238,7 @@ public final class Method extends FieldOrMethod {
     }
 
     /**
-     * Return string representation close to declaration format, `public static void main(String[] args) throws
+     * Return string representation close to declaration format, 'public static void main(String[] args) throws
      * IOException', e.g.
      *
      * @return String representation of the method.

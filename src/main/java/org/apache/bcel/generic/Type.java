@@ -81,7 +81,7 @@ public abstract class Type {
         final List<Type> vec = new ArrayList<>();
         int index;
         try {
-            // Skip any type arguments to read argument declarations between `(' and `)'
+            // Skip any type arguments to read argument declarations between '(' and ')'
             index = signature.indexOf('(') + 1;
             if (index <= 0) {
                 throw new ClassFormatException("Invalid method signature: " + signature);
@@ -103,7 +103,7 @@ public abstract class Type {
         int res = 0;
         int index;
         try {
-            // Skip any type arguments to read argument declarations between `(' and `)'
+            // Skip any type arguments to read argument declarations between '(' and ')'
             index = signature.indexOf('(') + 1;
             if (index <= 0) {
                 throw new ClassFormatException("Invalid method signature: " + signature);
@@ -146,7 +146,7 @@ public abstract class Type {
      */
     public static Type getReturnType(final String signature) {
         try {
-            // Read return type after `)'
+            // Read return type after ')'
             final int index = signature.lastIndexOf(')') + 1;
             return getType(signature.substring(index));
         } catch (final StringIndexOutOfBoundsException e) { // Should never occur
@@ -223,7 +223,6 @@ public abstract class Type {
      * @param signature signature string such as Ljava/lang/String;
      * @return type object
      */
-    // @since 6.0 no longer final
     public static Type getType(final String signature) throws StringIndexOutOfBoundsException {
         final byte type = Utility.typeOfSignature(signature);
         if (type <= Const.T_VOID) {
@@ -234,7 +233,7 @@ public abstract class Type {
         if (type != Const.T_ARRAY) { // type == T_REFERENCE
             // Utility.typeSignatureToString understands how to parse generic types.
             final String parsedSignature = Utility.typeSignatureToString(signature, false);
-            wrap(CONSUMED_CHARS, parsedSignature.length() + 2); // "Lblabla;" `L' and `;' are removed
+            wrap(CONSUMED_CHARS, parsedSignature.length() + 2); // "Lblabla;" 'L' and ';' are removed
             return ObjectType.getInstance(Utility.pathToPackage(parsedSignature));
         }
         int dim = 0;
@@ -276,7 +275,7 @@ public abstract class Type {
             final int consumed = consumed(getTypeSize(signature.substring(dim)));
             return encode(1, dim + consumed);
         }
-        final int index = signature.indexOf(';'); // Look for closing `;'
+        final int index = signature.indexOf(';'); // Look for closing ';'
         if (index < 0) {
             throw new ClassFormatException("Invalid signature: " + signature);
         }
@@ -307,9 +306,9 @@ public abstract class Type {
     @Deprecated
     protected String signature; // signature for the type TODO should be private
 
-    protected Type(final byte t, final String s) {
-        type = t;
-        signature = s;
+    protected Type(final byte type, final String signature) {
+        this.type = type;
+        this.signature = signature;
     }
 
     /**
@@ -322,6 +321,10 @@ public abstract class Type {
             return type == t.type && signature.equals(t.signature);
         }
         return false;
+    }
+
+    public String getClassName() {
+        return toString();
     }
 
     /**
@@ -383,7 +386,7 @@ public abstract class Type {
     }
 
     /**
-     * @return Type string, e.g. `int[]'
+     * @return Type string, e.g. 'int[]'
      */
     @Override
     public String toString() {

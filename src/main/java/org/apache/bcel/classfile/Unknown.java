@@ -20,8 +20,6 @@ import java.io.DataInput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.bcel.Const;
 
@@ -31,34 +29,17 @@ import org.apache.bcel.Const;
  * application-specific attributes should create an {@link UnknownAttributeReader} implementation and attach it via
  * {@link Attribute#addAttributeReader(String, UnknownAttributeReader)}.
  *
- *
  * @see Attribute
  * @see UnknownAttributeReader
  */
 public final class Unknown extends Attribute {
-
-    private static final Unknown[] EMPTY_ARRAY = {};
-
-    private static final Map<String, Unknown> UNKNOWN_ATTRIBUTES = new HashMap<>();
-
-    /**
-     * @return array of unknown attributes, but just one for each kind.
-     */
-    static Unknown[] getUnknownAttributes() {
-        try {
-            return UNKNOWN_ATTRIBUTES.values().toArray(EMPTY_ARRAY);
-        } finally {
-            // TODO Does this really make sense?
-            UNKNOWN_ATTRIBUTES.clear();
-        }
-    }
 
     private byte[] bytes;
 
     private final String name;
 
     /**
-     * Create a non-standard attribute.
+     * Constructs a new instance for a non-standard attribute.
      *
      * @param nameIndex Index in constant pool
      * @param length Content length in bytes
@@ -68,12 +49,11 @@ public final class Unknown extends Attribute {
     public Unknown(final int nameIndex, final int length, final byte[] bytes, final ConstantPool constantPool) {
         super(Const.ATTR_UNKNOWN, nameIndex, length, constantPool);
         this.bytes = bytes;
-        name = constantPool.getConstantUtf8(nameIndex).getBytes();
-        UNKNOWN_ATTRIBUTES.put(name, this);
+        this.name = constantPool.getConstantUtf8(nameIndex).getBytes();
     }
 
     /**
-     * Construct object from input stream.
+     * Constructs a new instance from an input stream.
      *
      * @param nameIndex Index in constant pool
      * @param length Content length in bytes
@@ -90,11 +70,12 @@ public final class Unknown extends Attribute {
     }
 
     /**
-     * Initialize from another object. Note that both objects use the same references (shallow copy). Use clone() for a
-     * physical copy.
+     * Constructs a new instance from another instance. Note that both objects use the same references (shallow copy). Use clone() for a physical copy.
+     *
+     * @param unknown Source.
      */
-    public Unknown(final Unknown c) {
-        this(c.getNameIndex(), c.getLength(), c.getBytes(), c.getConstantPool());
+    public Unknown(final Unknown unknown) {
+        this(unknown.getNameIndex(), unknown.getLength(), unknown.getBytes(), unknown.getConstantPool());
     }
 
     /**
@@ -122,7 +103,7 @@ public final class Unknown extends Attribute {
     }
 
     /**
-     * Dump unknown bytes to file stream.
+     * Dumps unknown bytes to file stream.
      *
      * @param file Output file stream
      * @throws IOException if an I/O error occurs.

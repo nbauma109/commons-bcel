@@ -49,7 +49,7 @@ public class SimpleElementValue extends ElementValue {
             dos.writeShort(getIndex());
             break;
         default:
-            throw new IllegalStateException("SimpleElementValue doesnt know how to write out type " + type);
+            throw new ClassFormatException("SimpleElementValue doesnt know how to write out type " + type);
         }
     }
 
@@ -100,7 +100,7 @@ public class SimpleElementValue extends ElementValue {
 
     public int getValueInt() {
         if (super.getType() != PRIMITIVE_INT) {
-            throw new IllegalStateException("Dont call getValueString() on a non STRING ElementValue");
+            throw new IllegalStateException("Dont call getValueInt() on a non INT ElementValue");
         }
         return super.getConstantPool().getConstantInteger(getIndex()).getBytes();
     }

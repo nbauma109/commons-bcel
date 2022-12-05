@@ -21,11 +21,19 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.apache.bcel.Const;
+import org.apache.bcel.util.Args;
 
 /**
  * This class is derived from <em>Attribute</em> and represents a constant value, i.e., a default value for initializing
  * a class field. This class is instantiated by the <em>Attribute.readAttribute()</em> method.
  *
+ * <pre>
+ * ConstantValue_attribute {
+ *   u2 attribute_name_index;
+ *   u4 attribute_length;
+ *   u2 constantvalue_index;
+ * }
+ * </pre>
  * @see Attribute
  */
 public final class ConstantValue extends Attribute {
@@ -35,6 +43,8 @@ public final class ConstantValue extends Attribute {
     /**
      * Initialize from another object. Note that both objects use the same references (shallow copy). Use clone() for a
      * physical copy.
+     *
+     * @param c Source to copy.
      */
     public ConstantValue(final ConstantValue c) {
         this(c.getNameIndex(), c.getLength(), c.getConstantValueIndex(), c.getConstantPool());
@@ -60,7 +70,7 @@ public final class ConstantValue extends Attribute {
      * @param constantPool Array of constants
      */
     public ConstantValue(final int nameIndex, final int length, final int constantValueIndex, final ConstantPool constantPool) {
-        super(Const.ATTR_CONSTANT_VALUE, nameIndex, length, constantPool);
+        super(Const.ATTR_CONSTANT_VALUE, nameIndex, Args.require(length, 2, "ConstantValue attribute length"), constantPool);
         this.constantValueIndex = constantValueIndex;
     }
 
