@@ -117,13 +117,43 @@ public class VerifierTestCase {
     }
 
     @Test
-    public void testCommonsLang1() throws IOException, URISyntaxException, ClassNotFoundException {
+    public void testCommonsLang2() throws IOException, URISyntaxException, ClassNotFoundException {
         testJarFile(getJarFile(org.apache.commons.lang.StringUtils.class), "ArrayUtils", "SerializationUtils");
     }
 
     @Test
     public void testDefinitionImpl() throws ClassNotFoundException {
         testNestHostWithJavaVersion("com.ibm.wsdl.DefinitionImpl");
+    }
+
+    @Test
+    public void testJvmOpCodes() throws ClassNotFoundException {
+    	testDefaultMethodValidation("org.apache.bcel.verifier.tests.JvmOpCodes");
+    }
+
+    @Test
+    public void testUtf8UnpairedSurrogateException() throws ClassNotFoundException {
+        testDefaultMethodValidation("com.google.protobuf.Utf8$UnpairedSurrogateException"); // contains SWAP instruction
+    }
+
+    @Test
+    public void testObjectBrowser() throws ClassNotFoundException {
+        testDefaultMethodValidation("groovy.inspect.swingui.ObjectBrowser"); // RETURN lies in dead code
+    }
+
+    @Test
+    public void testWritableClosure() throws ClassNotFoundException {
+        testDefaultMethodValidation("groovy.lang.Closure$WritableClosure"); // PUTFIELD UninitializedObjectType
+    }
+
+    @Test
+    public void testMakeGrammar() throws ClassNotFoundException {
+        testDefaultMethodValidation("groovyjarjarantlr.MakeGrammar"); // GETFIELD / PUTFIELD of package-private
+    }
+
+    @Test
+    public void testUnionInputStream() throws ClassNotFoundException {
+        testDefaultMethodValidation("org.eclipse.jgit.util.io.UnionInputStream"); // contains null ATHROW
     }
 
     @Test
