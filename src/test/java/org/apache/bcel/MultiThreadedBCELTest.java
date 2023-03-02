@@ -18,10 +18,9 @@ package org.apache.bcel;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.ClassFormatException;
-import org.apache.bcel.util.ClassPath;
-import org.apache.bcel.util.ClassPath.ClassFile;
 import org.apache.bcel.util.ClassLoaderUtils;
 import org.apache.bcel.util.SyntheticRepository;
+
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -34,6 +33,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public class MultiThreadedBCELTest {
+
+    private static final String CLASS_EXTENSION = ".class";
 
     @Test
     @DisplayName("Test multi-threaded parsing of Java classes using BCEL")
@@ -51,8 +52,8 @@ public class MultiThreadedBCELTest {
                 @Override
                 public void run() {
                     try {
-                        final ClassFile classFile = ClassPath.getClassFile(className);
-                        final JavaClass javaClass = new ClassParser(classFile.getInputStream(), classFile.getPath()).parse();
+                        final String classFilePath = className.replace(".", "/") + CLASS_EXTENSION;
+                        final JavaClass javaClass = new ClassParser(ClassLoaderUtils.getResourceAsStream(classFilePath)).parse();
                         assertNotNull(javaClass);
                     } catch (final IOException | ClassFormatException e) {
                         fail("Exception thrown while parsing class: " + className, e);
