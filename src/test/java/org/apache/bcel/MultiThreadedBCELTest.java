@@ -19,7 +19,6 @@ package org.apache.bcel;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.ClassFormatException;
 import org.apache.bcel.util.ClassLoaderUtils;
-import org.apache.bcel.util.SyntheticRepository;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
