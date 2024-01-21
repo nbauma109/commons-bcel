@@ -154,6 +154,15 @@ public final class StackMapType implements Node, Cloneable {
     }
 
     /**
+     * Gets the class name of this StackMapType from the constant pool at index position.
+     * @return the fully qualified name of the class for this StackMapType.
+     * @since 6.8.0
+     */
+    public String getClassName() {
+        return constantPool.constantToString(index, Const.CONSTANT_Class);
+    }
+
+    /**
      * @param constantPool Constant pool to be used for this object.
      */
     public void setConstantPool(final ConstantPool constantPool) {
