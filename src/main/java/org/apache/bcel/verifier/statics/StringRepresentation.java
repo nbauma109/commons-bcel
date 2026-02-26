@@ -387,6 +387,16 @@ public class StringRepresentation extends org.apache.bcel.classfile.EmptyVisitor
     }
 
     /**
+     * Visits PermittedSubclasses attribute.
+     *
+     * @since 6.13.0
+     */
+    @Override
+    public void visitPermittedSubclasses(final PermittedSubclasses obj) {
+        tostring = toString(obj);
+    }
+
+    /**
      * @since 6.0
      */
     @Override
