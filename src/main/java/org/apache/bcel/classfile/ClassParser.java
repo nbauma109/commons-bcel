@@ -238,6 +238,7 @@ public final class ClassParser {
         fields = new Field[fieldsCount];
         for (int i = 0; i < fieldsCount; i++) {
             fields[i] = new Field(dataInputStream, constantPool);
+            fields[i].setDeclaringClassNameIndex(classNameIndex);
         }
     }
 
@@ -274,6 +275,7 @@ public final class ClassParser {
         methods = new Method[methodsCount];
         for (int i = 0; i < methodsCount; i++) {
             methods[i] = new Method(dataInputStream, constantPool);
+            methods[i].setDeclaringClassNameIndex(classNameIndex);
         }
     }
 
